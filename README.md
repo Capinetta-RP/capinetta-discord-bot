@@ -1,5 +1,10 @@
 # 🤖 Capi Netta RP - Multi-Bot System (v1.0)
 
+[![GitHub stars](https://img.shields.io/github/stars/Capinetta-RP/capinetta-discord-bot?style=for-the-badge)](https://github.com/Capinetta-RP/capinetta-discord-bot)
+[![GitHub issues](https://img.shields.io/github/issues/Capinetta-RP/capinetta-discord-bot?style=for-the-badge)](https://github.com/Capinetta-RP/capinetta-discord-bot/issues)
+[![License](https://img.shields.io/github/license/Capinetta-RP/capinetta-discord-bot?style=for-the-badge)](https://github.com/Capinetta-RP/capinetta-discord-bot/blob/main/LICENSE.MD)
+[![Node](https://img.shields.io/badge/node-%3E%3D18-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+
 🔒 **SISTEMA EXCLUSIVO** para el servidor de **Capi Netta RP**
 
 Sistema modular y escalable de gestión para servidores de Discord de Roleplay, compuesto por un **Bot General** y un **Bot de Whitelist**. Implementa seguridad avanzada, moderación inteligente, sistema de tickets profesional y dashboard web. Utiliza **Prisma + MariaDB** para persistencia de datos y está optimizado para ejecutarse 24/7 mediante **PM2**.
