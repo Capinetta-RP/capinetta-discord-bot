@@ -1,0 +1,75 @@
+/**
+ * @file login.css
+ * @description Login page specific styles
+ */
+
+body.login-page {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.login-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    padding: 40px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+.login-container h1 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 28px;
+}
+
+.login-container p {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.discord-logo {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 20px;
+}
+
+.login-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #5865F2;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.3s;
+}
+
+.login-btn:hover {
+    background: #4752C4;
+}
+
+.login-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.info {
+    color: #999;
+    font-size: 12px;
+    margin-top: 30px;
+    line-height: 1.6;
+}

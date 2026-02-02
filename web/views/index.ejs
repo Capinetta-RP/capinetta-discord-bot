@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Capi Netta | Dashboard</title>
+    <!-- Resource hints para optimización -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.discordapp.com">
+    <link rel="stylesheet" href="/<%= cssFile %>?v=<%= Date.now() %>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <%- include('partials/sidebar') %>
+                            </div>
+                            <a href="/logout" class="logout-btn">Cerrar Sesión</a>
+                        </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <%- include('partials/server-selector') %>
+
+        <div class="header-section">
+            <h1>📊 Dashboard General</h1>
+            <p class="subtitle">Bienvenido, <%= user.username %>! Aquí puedes ver toda la actividad del servidor.</p>
+        </div>
+
+        <!-- Stats Grid - Row 1 -->
+        <div class="grid-container">
+            <div class="card highlight">
+                <h3>🎫 Tickets Abiertos</h3>
+                <div class="value">
+                    <%= stats.ticketsOpen %>
+                </div>
+                <p class="card-footer"><a href="/tickets?status=open">Ver detalles →</a></p>
+            </div>
+            <div class="card">
+                <h3>⚠️ Usuarios Warned</h3>
+                <div class="value">
+                    <%= stats.usersWarned %>
+                </div>
+                <p class="card-footer">De <%= stats.warnsTotal %> warns totales</p>
+            </div>
+            <div class="card">
+                <h3>📈 Total Warns</h3>
+                <div class="value">
+                    <%= stats.warnsTotal %>
+                </div>
+                <p class="card-footer">Histórico completo</p>
+            </div>
+            <div class="card">
+                <h3>👥 Miembros</h3>
+                <div class="value">
+                    <%= stats.online %>
+                </div>
+                <p class="card-footer">Miembros totales del servidor</p>
+            </div>
+        </div>
+
+        <!-- Stats Grid - Row 2 -->
+        <div class="grid-container">
+            <div class="card">
+                <h3>🎤 En Voz</h3>
+                <div class="value">
+                    <%= stats.voice %>
+                </div>
+                <p class="card-footer">Usuarios conectados ahora</p>
+            </div>
+            <div class="card">
+                <h3>👮 Staff Activo</h3>
+                <div class="value">
+                    <%= stats.staff %>
+                </div>
+                <p class="card-footer">Con presencia online</p>
+            </div>
+            <div class="card">
+                <h3>📡 Ping Bot</h3>
+                <div class="value">
+                    <%= stats.ping %>ms
+                </div>
+                <p class="card-footer">Latencia del bot</p>
+            </div>
+            <div class="card">
+                <h3>⚙️ Estado</h3>
+                <div class="value">
+                    <span style="color: #2ecc71;">✓ ONLINE</span>
+                </div>
+                <p class="card-footer">Sistema operativo</p>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="actions-section">
+            <h2>⚡ Acciones Rápidas</h2>
+            <div class="button-group">
+                <a href="/tickets" class="btn btn-primary">🎫 Gestionar Tickets</a>
+                <a href="/logs" class="btn btn-secondary">📜 Ver Todos los Logs</a>
+                <a href="/logout" class="btn btn-danger">🚪 Cerrar Sesión</a>
+            </div>
+        </div>
+
+        <!-- Recent Logs Section -->
+        <div class="logs-section">
+            <h2>📝 Últimas Actividades</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha</th>
+                            <th>Usuario</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% logs.forEach(log=> { %>
+                            <tr>
+                                <td><strong>#<%= log.id %></strong></td>
+                                <td><%= new Date(log.timestamp).toLocaleString('es-AR') %></td>
+                                <td>
+                                    <div class="log-user">
+                                        <img class="log-user-avatar" src="<%= log.userAvatar || 'https://cdn.discordapp.com/embed/avatars/0.png' %>" alt="Avatar" loading="lazy">
+                                        <span class="log-user-name"><%= log.userName || log.userId %></span>
+                                    </div>
+                                </td>
+                                <td><%= log.action %></td>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+                </table>
+                <div class="table-footer">
+                    <a href="/logs">Ver historial completo →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Card -->
+        <div class="info-card">
+            <h3>ℹ️ Información del Sistema</h3>
+            <p>🤖 Bot: <strong>Capi Netta RP</strong></p>
+            <p>🎮 Servidor: <strong>General</strong></p>
+            <p>📅 Última actualización: <strong><%= new Date().toLocaleString('es-AR') %></strong></p>
+        </div>
+
+    </main>
+
+    <%- include('partials/sidebar-script') %>
+
+</body>
+
+</html>

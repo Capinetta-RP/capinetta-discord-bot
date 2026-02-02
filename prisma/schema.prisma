@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Configuración del Servidor
+model GuildSettings {
+  guildId           String  @id @map("guildId")
+  logsChannel       String?
+  debugChannel      String?
+  verifyChannel     String?
+  welcomeChannel    String?
+  supportChannel    String?
+  roleUser          String?
+  roleNoVerify      String?
+  roleMuted         String?
+  staffRoles        String? // JSON array de IDs de roles de staff
+  ticketLogsChannel String?
+  ticketPanelChannel String? // Canal donde está el panel (ID)
+  ticketPanelMessage String? // Mensaje del panel (ID)
+  isSetup           Boolean @default(false)
+
+  @@map("guild_settings") // Nombre real de la tabla en SQL
+}
+
+// Warns
+model Warn {
+  guildId String
+  userId  String
+  count   Int     @default(0)
+  roles   String? // JSON String
+
+  @@id([guildId, userId])
+  @@index([guildId])
+  @@map("warns")
+}
+
+// Logs de Warns (Para history.js)
+model WarnLog {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  moderatorId String
+  reason      String?  @db.Text
+  warnNumber  Int
+  timestamp   DateTime @default(now())
+
+  @@index([userId])
+  @@index([timestamp])
+  @@map("warn_logs")
+}
+
+// Logs de Actividad (Para stats.js y logger.js)
+model ActivityLog {
+  id        Int      @id @default(autoincrement())
+  guildId   String
+  userId    String?
+  action    String?  @db.Text
+  timestamp DateTime @default(now())
+
+  @@index([guildId])
+  @@index([userId])
+  @@index([guildId, timestamp])
+  @@map("activity_logs")
+}
+
+// Usuarios (perfil Discord persistido)
+model User {
+  id          String   @id
+  username    String
+  avatar      String?
+  tag         String?
+  discriminator String?
+  lastSeenAt  DateTime @default(now()) @map("last_seen_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([updatedAt])
+  @@map("users")
+}
+
+// Errores del Sistema
+model SystemError {
+  id        Int      @id @default(autoincrement())
+  context   String?
+  message   String?  @db.Text
+  stack     String?  @db.Text
+  timestamp DateTime @default(now())
+
+  @@map("system_errors")
+}
+
+// Categorías de Tickets (Para db-tables.js)
+model TicketCategory {
+  id               Int      @id @default(autoincrement())
+  guildId          String
+  name             String
+  description      String?
+  emoji            String?
+  roleId           String?
+  targetCategoryId String?
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@map("ticket_categories")
+}
+
+// Tickets Activos
+model Ticket {
+  ticketId     Int      @id @default(autoincrement())
+  guildId      String
+  userId       String
+  channelId    String?
+  status       String   @default("open")
+  type         String?
+  claimedBy    String?
+  transcriptUrl String?
+  lastActivity DateTime @default(now())
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([guildId])
+  @@index([status])
+  @@index([guildId, status])
+  @@index([guildId, status, claimedBy])
+  @@index([userId])
+  @@index([channelId])
+  @@map("tickets")
+}
+
+// Acciones en Tickets
+model TicketAction {
+  id         Int      @id @default(autoincrement())
+  ticketId   Int
+  action     String
+  executorId String
+  targetId   String?
+  timestamp  DateTime @default(now())
+
+  @@index([ticketId])
+  @@index([timestamp])
+  @@map("ticket_actions")
+}
+
+// Logs de Whitelist
+model WhitelistLog {
+  id           Int      @id @default(autoincrement())
+  userId       String
+  userTag      String?
+  moderatorId  String
+  moderatorTag String?
+  action       String   @default("aprobado") // "aprobado", "rechazado"
+  note         String?  // Razon o nota opcional
+  timestamp    DateTime @default(now())
+
+  // Evitar duplicados: un usuario solo puede tener UN registro por action
+  @@unique([userId, action])
+  @@map("whitelist_logs")
+}

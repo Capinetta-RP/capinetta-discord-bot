@@ -1,0 +1,61 @@
+{
+  "name": "capi-netta-rp",
+  "version": "1.0.0",
+  "description": "Sistema modular de gestión para servidores Discord de Roleplay con bots duales, tickets profesionales y dashboard web",
+  "main": "index-general.js",
+  "author": "Capi Netta RP",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TU_ORGANIZACION/capi-netta-rp.git"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "roleplay",
+    "tickets",
+    "moderation",
+    "dashboard",
+    "prisma",
+    "express"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "scripts": {
+    "deploy": "node deploy-general.js && node deploy-whitelist.js",
+    "deploy:general": "node deploy-general.js",
+    "deploy:whitelist": "node deploy-whitelist.js",
+    "start": "node index-general.js",
+    "minify-css": "node minify-css.js",
+    "minify-js": "node minify-js.js",
+    "minify": "npm run minify-css && npm run minify-js",
+    "gen-ssl": "node generate-ssl-certs.js",
+    "prod": "pm2 start ecosystem.config.js",
+    "postinstall": "prisma generate",
+    "migrate": "npx prisma migrate deploy",
+    "setup": "npm install && npx prisma migrate deploy && npx prisma generate && npm run deploy && npm run minify && npm run prod",
+    "setup:dev": "npm install && npx prisma generate && npx prisma db push && npm run deploy && npm run minify && npm run prod"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.10.0",
+    "canvas": "^2.11.2",
+    "compression": "^1.8.1",
+    "connect-redis": "^7.1.0",
+    "discord-html-transcripts": "^3.2.0",
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.10.0",
+    "express-session": "^1.18.0",
+    "helmet": "^7.1.0",
+    "ioredis": "^5.9.2",
+    "passport": "^0.7.0",
+    "passport-discord-auth": "^1.2.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.10.0"
+  }
+}

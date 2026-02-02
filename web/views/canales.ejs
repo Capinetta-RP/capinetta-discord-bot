@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Gestión de Canales | Capi Netta</title>
+    <link rel="stylesheet" href="/<%= cssFile %>?v=<%= Date.now() %>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <% if (process.env.NODE_ENV !=='production' ) { %>
+        <link rel="stylesheet" href="/css/canales.css?v=<%= Date.now() %>">
+        <% } %>
+            <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+</head>
+
+<body>
+    <%- include('partials/sidebar') %>
+
+        <main class="main-content">
+            <%- include('partials/server-selector') %>
+
+                <% const channelControls=` <button id="createChannelBtn" class="btn-refresh"
+                    style="background: var(--accent-color); color: white; border: 1px solid var(--accent-color);"
+                    title="Crear Canal">
+                    <i class="fas fa-plus"></i> Nuevo
+                    </button>
+                    <button id="refreshBtn" class="btn-refresh" title="Recargar lista">
+                        <i class="fas fa-sync-alt"></i> Refrescar
+                    </button>
+                    `;
+                    %>
+                    <%- include('partials/page-header', { title: '📢 Gestión de Canales' ,
+                        subtitle: 'Administra los canales del servidor y sus permisos rápidos' , controls:
+                        channelControls }) %>
+
+                        <!-- Estadísticas Rápidas -->
+                        <div class="stats-grid"
+                            style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); margin-bottom: 30px; gap: 16px;">
+                            <%- include('partials/stats-card', { label: 'Total' , value: stats.totalChannels,
+                                icon: 'fas fa-hashtag' , color: '#3498db' }) %>
+                                <%- include('partials/stats-card', { label: 'Voz' , value: stats.voiceChannels,
+                                    icon: 'fas fa-microphone' , color: '#2ecc71' }) %>
+                                    <%- include('partials/stats-card', { label: 'Categorías' , value:
+                                        stats.totalCategories, icon: 'fas fa-folder' , color: '#f39c12' }) %>
+                                        <%- include('partials/stats-card', { label: 'En Voz' , value: stats.activeVoice,
+                                            icon: 'fas fa-users' , color: '#1abc9c' }) %>
+                        </div>
+
+                        <!-- Filtros y Búsqueda -->
+                        <div class="filters-section">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchInput" placeholder="Buscar canal...">
+                            </div>
+                            <div class="filter-tabs" id="filterTabs">
+                                <button class="filter-tab active" data-filter="all">Todos</button>
+                                <button class="filter-tab" data-filter="text">Texto</button>
+                                <button class="filter-tab" data-filter="voice">Voz</button>
+                                <button class="filter-tab" data-filter="other">Otros</button>
+                            </div>
+                        </div>
+
+                        <div id="channelsContainer">
+                            <% if (groupedChannels.length===0) { %>
+                                <div class="empty-state">
+                                    <i class="fas fa-search"></i>
+                                    <h3>No se encontraron canales</h3>
+                                    <p>Parece que este servidor está vacío o hubo un error al cargar.</p>
+                                </div>
+                                <% } else { %>
+                                    <% groupedChannels.forEach(group=> { %>
+                                        <div class="category-group">
+                                            <div class="category-header"
+                                                style="display: flex; justify-content: space-between; align-items: center;">
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <i class="fas fa-chevron-down"
+                                                        style="font-size: 0.8rem; transition: transform 0.3s;"></i>
+                                                    <i class="fas fa-folder-open" style="opacity: 0.8;"></i>
+                                                    <span>
+                                                        <%= group.category.name %>
+                                                    </span>
+                                                </div>
+                                                <div
+                                                    style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
+                                                    <% if (group.category.id !=='uncategorized' ) { %>
+                                                        <button class="permissions-btn category-perm-btn"
+                                                            data-id="<%= group.category.id %>"
+                                                            data-name="<%= group.category.name %>"
+                                                            title="Configurar Categoría (Afecta hijos si se sincroniza)">
+                                                            <i class="fas fa-cog"></i>
+                                                        </button>
+                                                        <% } %>
+                                                            <span
+                                                                style="font-size: 0.7rem; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 10px;">
+                                                                <%= group.channels.length %>
+                                                            </span>
+                                                </div>
+                                            </div>
+                                            <ul class="channel-list" data-category-id="<%= group.category.id %>">
+                                                <% group.channels.forEach(channel=> { %>
+                                                    <li class="channel-item" data-id="<%= channel.id %>"
+                                                        data-type="<%= channel.type %>">
+                                                        <!-- Icono del Canal -->
+                                                        <div class="channel-icon">
+                                                            <% if (channel.type===0) { %>
+                                                                <i class="fas fa-hashtag"></i>
+                                                                <% } else if (channel.type===2) { %>
+                                                                    <i class="fas fa-volume-up"
+                                                                        style="color: #2ecc71;"></i>
+                                                                    <% } else if (channel.type===5) { %>
+                                                                        <i class="fas fa-bullhorn"
+                                                                            style="color: #e74c3c;"></i>
+                                                                        <% } else if (channel.type===15) { %>
+                                                                            <i class="fas fa-comments"
+                                                                                style="color: #f39c12;"></i>
+                                                                            <% } else if (channel.type===13) { %>
+                                                                                <i class="fas fa-broadcast-tower"
+                                                                                    style="color: #9b59b6;"></i>
+                                                                                <% } else { %>
+                                                                                    <i class="fas fa-circle"></i>
+                                                                                    <% } %>
+                                                        </div>
+
+                                                        <!-- Info del Canal -->
+                                                        <div class="channel-info">
+                                                            <div class="channel-name">
+                                                                <%= channel.name %>
+                                                                    <% if (channel.nsfw) { %>
+                                                                        <span class="badge"
+                                                                            style="background: rgba(231, 76, 60, 0.1); color: #e74c3c; font-size: 0.65rem; border: 1px solid rgba(231,76,60,0.2);">NSFW</span>
+                                                                        <% } %>
+                                                            </div>
+                                                            <div class="channel-meta">
+                                                                <span class="meta-badge">
+                                                                    <%= channel.id %>
+                                                                </span>
+                                                                <span>&bull;</span>
+                                                                <span style="text-transform: capitalize;">
+                                                                    <%= channel.typeLabel %>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Badges de Estado -->
+                                                        <div class="feature-badges">
+                                                            <!-- Permission Status Badge (NEW) -->
+                                                            <% if (channel.permStatus) { %>
+                                                                <span class="badge dynamic-perm-badge"
+                                                                    title="Estado de Permisos"
+                                                                    data-color="<%= channel.permStatus.color %>">
+                                                                    <i class="fas <%= channel.permStatus.icon %>"
+                                                                        style="margin-right: 4px;"></i>
+                                                                    <%= channel.permStatus.label %>
+                                                                </span>
+                                                                <% } %>
+
+                                                                    <% if (channel.userLimit> 0) { %>
+                                                                        <span class="badge-perm"
+                                                                            title="Límite: <%= channel.userLimit %>"><i
+                                                                                class="fas fa-users"></i>
+                                                                            <%= channel.userLimit %>
+                                                                        </span>
+                                                                        <% } %>
+                                                                            <% if (channel.slowmode> 0) { %>
+                                                                                <span class="badge-perm"
+                                                                                    title="Slowmode: <%= channel.slowmode %>s"><i
+                                                                                        class="fas fa-clock"></i>
+                                                                                    <%= channel.slowmode %>s
+                                                                                </span>
+                                                                                <% } %>
+                                                                                    <% if (channel.membersConnected> 0)
+                                                                                        { %>
+                                                                                        <span class="badge"
+                                                                                            style="background: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid rgba(46,204,113,0.2);">
+                                                                                            <i class="fas fa-circle"
+                                                                                                style="font-size: 0.5rem; margin-right: 4px;"></i>
+                                                                                            <%= channel.membersConnected
+                                                                                                %>
+                                                                                        </span>
+                                                                                        <% } %>
+                                                        </div>
+
+                                                        <!-- Botón de Acción -->
+                                                        <div class="actions">
+                                                            <button class="permissions-btn" data-id="<%= channel.id %>"
+                                                                data-name="<%= channel.name %>"
+                                                                data-topic="<%= channel.topic %>"
+                                                                data-nsfw="<%= channel.nsfw %>"
+                                                                data-slowmode="<%= channel.slowmode %>"
+                                                                data-userlimit="<%= channel.userLimit || '' %>"
+                                                                title="Configurar Canal">
+                                                                <i class="fas fa-shield-alt"></i>
+                                                            </button>
+                                                        </div>
+                                                    </li>
+                                                    <% }); %>
+                                            </ul>
+                                        </div>
+                                        <% }); %>
+                                            <% } %>
+                        </div>
+        </main>
+
+        <!-- Create Channel Modal -->
+        <div id="createChannelModal" class="modal-overlay">
+            <div class="modal" style="max-width: 450px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 style="margin: 0; font-size: 1.4rem;">Crear Nuevo Canal</h2>
+                    <button class="modal-close-btn" id="closeCreateBtn"><i class="fas fa-times"></i></button>
+                </div>
+                <form id="createChannelForm">
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label style="display: block; margin-bottom: 8px;">Nombre del Canal</label>
+                        <input type="text" id="createName" class="form-control" placeholder="nuevo-canal" required
+                            style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary);">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label style="display: block; margin-bottom: 8px;">Tipo</label>
+                        <div style="display: flex; gap: 10px;">
+                            <label
+                                style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                                <input type="radio" name="createType" value="0" checked> <i class="fas fa-hashtag"></i>
+                                Texto
+                            </label>
+                            <label
+                                style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                                <input type="radio" name="createType" value="2"> <i class="fas fa-volume-up"></i> Voz
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 24px;">
+                        <label style="display: block; margin-bottom: 8px;">Categoría</label>
+                        <select id="createCategory" class="form-control"
+                            style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary);">
+                            <option value="">Sin Categoría</option>
+                            <% groupedChannels.forEach(group=> {
+                                if(group.category.id !== 'uncategorized') { %>
+                                <option value="<%= group.category.id %>">
+                                    <%= group.category.name %>
+                                </option>
+                                <% } }); %>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary"
+                        style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: var(--accent-color); color: white; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-plus"></i> Crear Canal
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div id="permissionsModal" class="modal-overlay">
+            <div class="modal" style="max-width: 480px;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 24px;">
+                    <div>
+                        <h2 style="margin: 0; font-size: 1.4rem;">Permisos Rápidos</h2>
+                        <p id="modalChannelName"
+                            style="color: var(--accent-color); margin: 4px 0 0 0; font-weight: 600; font-size: 0.95rem;">
+                        </p>
+                    </div>
+                    <button class="modal-close-btn"
+                        style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.4rem; padding: 4px;"><i
+                            class="fas fa-times"></i></button>
+                </div>
+
+                <!-- Tabs -->
+                <div class="modal-tabs"
+                    style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+                    <div class="modal-tab active" data-tab="permissions"
+                        style="padding: 10px; cursor: pointer; border-bottom: 2px solid var(--accent-color); font-weight: 600;">
+                        <i class="fas fa-shield-alt"></i> Permisos
+                    </div>
+                    <div class="modal-tab" data-tab="settings"
+                        style="padding: 10px; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-muted);">
+                        <i class="fas fa-cog"></i> Ajustes
+                    </div>
+                </div>
+
+                <!-- Tab: Permissions -->
+                <div id="tab-content-permissions" class="tab-content active">
+                    <div class="preset-grid">
+                        <div class="preset-btn" data-preset="lock_all">
+                            <div class="preset-icon" style="color: #e74c3c;"><i class="fas fa-lock"></i></div>
+                            <div>
+                                <div style="font-weight: 700; color: #e74c3c;">Bloqueo Total</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Nadie puede
+                                    escribir (@everyone)</div>
+                            </div>
+                        </div>
+
+                        <div class="preset-btn" data-preset="private">
+                            <div class="preset-icon" style="color: #6366f1;"><i class="fas fa-eye-slash"></i></div>
+                            <div>
+                                <div style="font-weight: 700; color: #6366f1;">Privado (@everyone)</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Solo visible
+                                    con
+                                    permisos explícitos</div>
+                            </div>
+                        </div>
+
+                        <div class="preset-btn" data-preset="hide_unverified">
+                            <div class="preset-icon" style="color: #f39c12;"><i class="fas fa-eye-slash"></i></div>
+                            <div>
+                                <div style="font-weight: 700; color: #f39c12;">Ocultar a No Verificados</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Invisible
+                                    para
+                                    usuarios sin verificar</div>
+                            </div>
+                        </div>
+
+                        <div class="preset-btn" data-preset="staff_only">
+                            <div class="preset-icon" style="color: #3498db;"><i class="fas fa-user-shield"></i></div>
+                            <div>
+                                <div style="font-weight: 700; color: #3498db;">Exclusivo Staff</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Solo visible
+                                    para roles de administración</div>
+                            </div>
+                        </div>
+
+                        <div class="preset-btn" data-preset="mute_zone">
+                            <div class="preset-icon" style="color: #9b59b6;"><i class="fas fa-dungeon"></i></div>
+                            <div>
+                                <div style="font-weight: 700; color: #9b59b6;">Zona Mute (Cárcel)</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Solo visible
+                                    para el rol Muteado</div>
+                            </div>
+                        </div>
+
+                        <div class="preset-btn" data-preset="sync">
+                            <div class="preset-icon" style="color: #95a5a6;"><i class="fas fa-sync"></i></div>
+                            <div>
+                                <div style="font-weight: 700; color: var(--text-primary);">Sincronizar (Reset)</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Restaurar
+                                    permisos de la categoría</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Role Selector Section (NEW) -->
+                    <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                        <h3 style="margin: 0 0 16px 0; font-size: 1rem; color: var(--text-primary);">Permiso Jerárquico:
+                            A
+                            partir de rol...</h3>
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <select id="roleSelector"
+                                style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary);">
+                                <option value="">Selecciona un rol...</option>
+                                <% roles.forEach(role=> { %>
+                                    <option value="<%= role.id %>" class="dynamic-role-option"
+                                        data-color="<%= role.color %>">
+                                        <%= role.name %>
+                                    </option>
+                                    <% }); %>
+                            </select>
+                            <button id="addRoleBtn" class="btn btn-primary"
+                                style="padding: 10px 20px; min-width: 100px;">
+                                <i class="fas fa-plus"></i> Añadir
+                            </button>
+                        </div>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
+                            <i class="fas fa-info-circle"></i> Se conceden permisos a este rol <strong>y a todos los
+                                roles
+                                superiores</strong> en la jerarquía.
+                        </p>
+                    </div>
+                </div> <!-- End Permissions Tab -->
+
+                <!-- Tab: Settings -->
+                <div id="tab-content-settings" class="tab-content" style="display: none;">
+                    <form id="channelSettingsForm" style="display: flex; flex-direction: column; gap: 16px;">
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">Nombre del
+                                Canal</label>
+                            <input type="text" id="inputName" name="name" class="form-control"
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary);">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">Tema /
+                                Descripción</label>
+                            <textarea id="inputTopic" name="topic" class="form-control" rows="3"
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary);"></textarea>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start;">
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">Slowmode
+                                    (s)</label>
+                                <input type="number" id="inputSlowmode" name="slowmode" class="form-control" min="0"
+                                    max="21600"
+                                    style="width: 100%; padding: 10px; height: 42px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary);">
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    style="display: block; margin-bottom: 8px; font-size: 0.9rem;">Restricción</label>
+                                <div
+                                    style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-secondary); padding: 0 10px; border-radius: 8px; border: 1px solid var(--border-color); height: 42px; width: 100%;">
+                                    <label style="margin:0; cursor:pointer; user-select: none; flex-grow: 1;"
+                                        for="inputNSFW">NSFW (+18)</label>
+                                    <input type="checkbox" id="inputNSFW" name="nsfw"
+                                        style="width: 18px; height: 18px; cursor: pointer;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"
+                            style="margin-top: 8px; padding: 12px; background: var(--accent-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Guild ID for scripts -->
+            <div id="guildIdData" data-guild-id="<%= selectedGuild.id %>" style="display: none;"></div>
+
+            <!-- Scripts -->
+            <script src="/js/<%= jsFile('dashboard-utils') %>"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+            <script src="/js/pages/canales.js"></script>
+
+            document.addEventListener('DOMContentLoaded', () => {
+            // --- SortableJS Init ---
+            const channelLists = document.querySelectorAll('.channel-list');
+            channelLists.forEach(list => {
+            new Sortable(list, {
+            group: 'channels',
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            handle: '.channel-item', // Make whole item draggable or adding a handle? Whole item.
+            onEnd: async function (evt) {
+            const updates = [];
+
+            // Process all lists to rebuild global state
+            document.querySelectorAll('.channel-list').forEach(list => {
+            let catId = list.dataset.categoryId;
+            if (catId === 'uncategorized') catId = null; // Send null for no category
+
+            // Independent Counters for Text vs Voice
+            // Because Discord sorts them separately in the UI
+            let textIndex = 0;
+            let voiceIndex = 0;
+
+            list.querySelectorAll('.channel-item').forEach(item => {
+            const type = parseInt(item.dataset.type);
+            let pos = 0;
+
+            // 2 (Voice) or 13 (Stage) -> Voice Group
+            if (type === 2 || type === 13) {
+            pos = voiceIndex++;
+            } else {
+            // 0 (Text), 5 (News), 15 (Forum) -> Text Group
+            pos = textIndex++;
+            }
+
+            updates.push({
+            channel: item.dataset.id,
+            position: pos,
+            parent: catId
+            });
+            });
+            });
+
+            try {
+            // Show loading cursor
+            document.body.style.cursor = 'wait';
+
+            await fetch(`/canales/${currentGuildId}/positions`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ positions: updates })
+            });
+            } catch (e) {
+            console.error(e);
+            if (typeof showToast === 'function') showToast('Error al mover canal', 'error');
+            } finally {
+            document.body.style.cursor = 'default';
+            }
+            }
+            });
+            });
+
+            // --- Create Channel Logic ---
+            const createBtn = document.getElementById('createChannelBtn');
+            const createModal = document.getElementById('createChannelModal');
+            const closeCreateBtn = document.getElementById('closeCreateBtn');
+            const createForm = document.getElementById('createChannelForm');
+
+            if (createBtn && createModal) {
+            createBtn.addEventListener('click', () => {
+            createModal.style.display = 'flex';
+            createModal.classList.add('active');
+            });
+
+            const closeCreate = () => {
+            createModal.style.display = 'none';
+            createModal.classList.remove('active');
+            };
+
+            if (closeCreateBtn) closeCreateBtn.addEventListener('click', closeCreate);
+            createModal.addEventListener('click', (e) => {
+            if (e.target === createModal) closeCreate();
+            });
+
+            if (createForm) {
+            createForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = createForm.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando...';
+
+            try {
+            const response = await fetch(`/canales/${currentGuildId}/create`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+            name: document.getElementById('createName').value,
+            type: createForm.querySelector('input[name="createType"]:checked').value,
+            parentId: document.getElementById('createCategory').value
+            })
+            });
+            const data = await response.json();
+            if (data.success) {
+            window.location.reload();
+            } else {
+            throw new Error(data.message);
+            }
+            } catch (err) {
+            if (typeof showToast === 'function') showToast(err.message, 'error');
+            else alert(err.message);
+            } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+            }
+            });
+            }
+            }
+            console.log('Channel Manager Loaded (CSP Compliant)');
+
+            // Apply Dynamic Colors (Fix for EJS/CSS Linting)
+            document.querySelectorAll('.dynamic-perm-badge').forEach(el => {
+            const color = el.dataset.color;
+            if (color) {
+            el.style.color = color;
+            el.style.background = color + '1A';
+            el.style.borderColor = color + '40';
+            }
+            });
+            // Note: Styling options is limited in some browsers but 'color' usually works
+            document.querySelectorAll('.dynamic-role-option').forEach(el => {
+            if (el.dataset.color) el.style.color = el.dataset.color;
+            });
+
+            const guildId = '<%= selectedGuild.id %>';
+                let currentChannelId = null;
+                let currentFilter = 'all';
+
+                // --- Event Listeners ---
+
+                // Refresh Button
+                const refreshBtn = document.getElementById('refreshBtn');
+                if (refreshBtn) {
+                refreshBtn.addEventListener('click', () => window.location.reload());
+                }
+
+                // Search Input
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                searchInput.addEventListener('keyup', filterChannels);
+                }
+
+                // Filter Tabs
+                const filterTabs = document.getElementById('filterTabs');
+                if (filterTabs) {
+                filterTabs.addEventListener('click', (e) => {
+                const tab = e.target.closest('.filter-tab');
+                if (tab) {
+                setFilter(tab.dataset.filter, tab);
+                }
+                });
+                }
+
+                // Category Toggle & Permissions Button (Delegation)
+                const channelsContainer = document.getElementById('channelsContainer');
+                if (channelsContainer) {
+                channelsContainer.addEventListener('click', (e) => {
+                // 1. Category Perms (Check first)
+                const catPermBtn = e.target.closest('.category-perm-btn');
+                if (catPermBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                openPermissionsModal(catPermBtn);
+                return;
+                }
+
+                // 2. Toggle Category
+                const header = e.target.closest('.category-header');
+                if (header) {
+                toggleCategory(header);
+                return;
+                }
+
+                // 3. Open Channel Permissions Modal
+                const permBtn = e.target.closest('.permissions-btn');
+                if (permBtn) {
+                openPermissionsModal(permBtn);
+                return;
+                }
+                });
+                }
+
+                // Modal Close Button
+                // Modal Close Button (Permissions Modal)
+                const permissionsModalEl = document.getElementById('permissionsModal');
+                if (permissionsModalEl) {
+                const closeBtns = permissionsModalEl.querySelectorAll('.modal-close-btn');
+                closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
+                }
+
+                // Modal Overlay Click (Close)
+                const permissionsModal = document.getElementById('permissionsModal');
+                if (permissionsModal) {
+                permissionsModal.addEventListener('click', (e) => {
+                if (e.target === permissionsModal) {
+                closeModal();
+                }
+                });
+                }
+
+                // Apply Presets (Delegation inside Modal)
+                const presetGrid = document.querySelector('.preset-grid');
+                if (presetGrid) {
+                presetGrid.addEventListener('click', (e) => {
+                const presetBtn = e.target.closest('.preset-btn');
+                if (presetBtn) {
+                const preset = presetBtn.dataset.preset;
+                if (preset) applyPreset(preset, presetBtn);
+                }
+                });
+                }
+
+
+                // Add Role Button Listener
+                const addRoleBtn = document.getElementById('addRoleBtn');
+                if (addRoleBtn) {
+                addRoleBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const roleSelector = document.getElementById('roleSelector');
+                const roleId = roleSelector.value;
+                if (!roleId) {
+                if (typeof showToast === 'function') showToast('Selecciona un rol primero', 'error');
+                else alert('Selecciona un rol');
+                return;
+                }
+                applyPreset('add_role', addRoleBtn, { roleId });
+                });
+                }
+
+                // Tabs & Form Logic
+                document.querySelectorAll('.modal-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                document.querySelectorAll('.modal-tab').forEach(t => {
+                t.classList.remove('active');
+                t.style.borderBottomColor = 'transparent';
+                t.style.fontWeight = 'normal';
+                if (t.dataset.tab === 'settings') t.style.color = 'var(--text-muted)';
+                });
+                document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+
+                tab.classList.add('active');
+                tab.style.borderBottomColor = 'var(--accent-color)';
+                tab.style.fontWeight = '600';
+                if (tab.dataset.tab === 'settings') tab.style.color = 'var(--text-primary)';
+
+                document.getElementById('tab-content-' + tab.dataset.tab).style.display = 'block';
+                });
+                });
+
+                const settingsForm = document.getElementById('channelSettingsForm');
+                if (settingsForm) {
+                settingsForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = settingsForm.querySelector('button[type="submit"]');
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+                try {
+                const formData = {
+                name: document.getElementById('inputName').value,
+                topic: document.getElementById('inputTopic').value,
+                slowmode: document.getElementById('inputSlowmode').value,
+                nsfw: document.getElementById('inputNSFW').checked
+                };
+
+                const response = await fetch(`/canales/${guildId}/update/${currentChannelId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                if (typeof showToast === 'function') showToast(data.message, 'success');
+                else alert(data.message);
+                setTimeout(() => window.location.reload(), 1000);
+                } else {
+                throw new Error(data.message);
+                }
+                } catch (error) {
+                console.error(error);
+                if (typeof showToast === 'function') showToast(error.message, 'error');
+                else alert('Error: ' + error.message);
+                } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                }
+                });
+                }
+
+                // --- Functions ---
+
+                function setFilter(filter, btn) {
+                currentFilter = filter;
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                btn.classList.add('active');
+                filterChannels();
+                }
+
+                function filterChannels() {
+                const search = document.getElementById('searchInput').value.toLowerCase();
+                const container = document.getElementById('channelsContainer');
+                const groups = container.querySelectorAll('.category-group');
+                let hasGloballyVisible = false;
+
+                groups.forEach(group => {
+                const items = group.querySelectorAll('.channel-item');
+                let hasVisibleInGroup = false;
+
+                items.forEach(item => {
+                const name = item.querySelector('.channel-name').textContent.toLowerCase().trim();
+                const type = item.dataset.type || 'text';
+
+                let typeMatch = true;
+                if (currentFilter === 'text') typeMatch = type === '0' || type === '15';
+                if (currentFilter === 'voice') typeMatch = type === '2' || type === '13';
+                if (currentFilter === 'other') typeMatch = type !== '0' && type !== '15' && type !== '2' && type !==
+                '13';
+
+                const nameMatch = name.includes(search);
+
+                if (typeMatch && nameMatch) {
+                item.style.display = 'grid';
+                hasVisibleInGroup = true;
+                hasGloballyVisible = true;
+                } else {
+                item.style.display = 'none';
+                }
+                });
+
+                group.style.display = hasVisibleInGroup ? 'block' : 'none';
+                });
+
+                // Empty Message
+                let emptyMsg = document.getElementById('filter-empty-msg');
+                if (!hasGloballyVisible) {
+                if (!emptyMsg) {
+                emptyMsg = document.createElement('div');
+                emptyMsg.id = 'filter-empty-msg';
+                emptyMsg.className = 'empty-state';
+                emptyMsg.innerHTML = '<i class="fas fa-filter"></i>
+                <p>No hay canales que coincidan</p>';
+                container.appendChild(emptyMsg);
+                }
+                emptyMsg.style.display = 'block';
+                } else if (emptyMsg) {
+                emptyMsg.style.display = 'none';
+                }
+                }
+
+                function toggleCategory(header) {
+                const list = header.nextElementSibling;
+                const icon = header.querySelector('.fa-chevron-down');
+
+                if (list.style.display === 'none') {
+                list.style.display = 'block';
+                icon.style.transform = 'rotate(0deg)';
+                header.style.opacity = '1';
+                } else {
+                list.style.display = 'none';
+                icon.style.transform = 'rotate(-90deg)';
+                header.style.opacity = '0.7';
+                }
+                }
+
+                function openPermissionsModal(btn) {
+                currentChannelId = btn.dataset.id;
+                const channelName = btn.dataset.name;
+
+                const modalName = document.getElementById('modalChannelName');
+                if (modalName) modalName.textContent = '#' + channelName;
+
+                // Populate Settings
+                document.getElementById('inputName').value = channelName;
+                document.getElementById('inputTopic').value = btn.dataset.topic || '';
+                document.getElementById('inputSlowmode').value = btn.dataset.slowmode || 0;
+                document.getElementById('inputNSFW').checked = btn.dataset.nsfw === 'true';
+
+                // Reset to Permissions Tab
+                const permTab = document.querySelector('.modal-tab[data-tab="permissions"]');
+                if (permTab) permTab.click();
+
+                const modal = document.getElementById('permissionsModal');
+                if (modal) {
+                modal.style.display = 'flex';
+                void modal.offsetWidth; // Force reflow
+                modal.classList.add('active');
+                }
+                }
+
+                function closeModal() {
+                const modal = document.getElementById('permissionsModal');
+                if (modal) {
+                modal.classList.remove('active');
+                setTimeout(() => {
+                if (!modal.classList.contains('active')) {
+                modal.style.display = 'none';
+                }
+                }, 300);
+                }
+                currentChannelId = null;
+                }
+
+                async function applyPreset(preset, btn, extraData = {}) {
+                if (!currentChannelId || !guildId) {
+                console.error('Missing ID', { currentChannelId, guildId });
+                return;
+                }
+
+                const originalContent = btn.innerHTML;
+
+                btn.innerHTML = '<div
+                    style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;"><i
+                        class="fas fa-spinner fa-spin"></i></div>';
+                btn.style.pointerEvents = 'none';
+
+                try {
+                const response = await fetch(`/canales/${guildId}/permissions/${currentChannelId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ preset, ...extraData })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                if (typeof showToast === 'function') {
+                showToast('✅ ' + data.message, 'success');
+                } else {
+                alert('✅ ' + data.message);
+                }
+                closeModal();
+                } else {
+                if (typeof showToast === 'function') {
+                showToast('❌ ' + data.message, 'error');
+                } else {
+                alert('❌ ' + data.message);
+                }
+                }
+                } catch (error) {
+                console.error('Error applying preset:', error);
+                alert('Error de conexión');
+                } finally {
+                btn.innerHTML = originalContent;
+                btn.style.pointerEvents = 'auto';
+                }
+                }
+                });
+                </script>
+                <%- include('partials/sidebar-script') %>
+</body>
+
+</html>

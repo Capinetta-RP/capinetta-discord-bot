@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Capi Netta | Logs</title>
+    <link rel="stylesheet" href="/<%= cssFile %>?v=<%= Date.now() %>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <%- include('partials/sidebar') %>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <%- include('partials/server-selector') %>
+
+                <h1>📜 Registro Completo de Actividad</h1>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Usuario / Actor</th>
+                                <th>Detalle de la Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% logs.forEach(log=> { %>
+                                <tr>
+                                    <td>#<%= log.id %>
+                                    </td>
+                                    <td>
+                                        <%= new Date(log.timestamp).toLocaleString('es-AR') %>
+                                    </td>
+                                    <td>
+                                        <div class="log-user">
+                                            <img class="log-user-avatar"
+                                                src="<%= log.userAvatar || 'https://cdn.discordapp.com/embed/avatars/0.png' %>"
+                                                alt="Avatar" loading="lazy">
+                                            <span class="log-user-name">
+                                                <%= log.userName || log.userId %>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <%= log.action %>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                        </tbody>
+                    </table>
+
+                    <% if (pagination && pagination.totalPages> 1) { %>
+                        <div class="pagination">
+                            <% if (pagination.hasPrev) { %>
+                                <a href="?page=1" class="btn btn-sm btn-secondary">Primera</a>
+                                <a href="?page=<%= pagination.currentPage - 1 %>" class="btn btn-sm btn-secondary">←
+                                    Anterior</a>
+                                <% } %>
+
+                                    <span class="pagination-info">
+                                        Página <%= pagination.currentPage %> de <%= pagination.totalPages %>
+                                                (<%= pagination.totalCount %> logs totales)
+                                    </span>
+
+                                    <% if (pagination.hasNext) { %>
+                                        <a href="?page=<%= pagination.currentPage + 1 %>"
+                                            class="btn btn-sm btn-secondary">Siguiente →</a>
+                                        <a href="?page=<%= pagination.totalPages %>"
+                                            class="btn btn-sm btn-secondary">Última</a>
+                                        <% } %>
+                        </div>
+                        <% } %>
+                </div>
+
+        </main>
+
+</body>
+
+<%- include('partials/sidebar-script') %>
+
+</html>

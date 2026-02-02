@@ -1,0 +1,39 @@
+<%
+/**
+ * Common head section for all pages
+ * Variables expected:
+ *  - pageTitle: Title of the page
+ *  - cssFiles: Array of additional CSS files (optional)
+ *  - includeCharts: Boolean to include Chart.js (optional)
+ */
+const pageTitle = typeof title !== 'undefined' ? title : 'Capi Netta | Dashboard';
+const additionalCss = typeof cssFiles !== 'undefined' ? cssFiles : [];
+const loadCharts = typeof includeCharts !== 'undefined' ? includeCharts : false;
+%>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title><%= pageTitle %></title>
+
+<!-- Resource hints for optimization -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.discordapp.com">
+
+<!-- Main stylesheet -->
+<link rel="stylesheet" href="/<%= cssFile %>?v=<%= Date.now() %>">
+
+<!-- Additional stylesheets -->
+<% additionalCss.forEach(function(cssPath) { %>
+    <link rel="stylesheet" href="<%= cssPath %>?v=<%= Date.now() %>">
+<% }); %>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<% if (loadCharts) { %>
+<!-- Chart.js for charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<% } %>

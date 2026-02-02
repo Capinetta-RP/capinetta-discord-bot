@@ -1,0 +1,53 @@
+/**
+ * @file unmute.js
+ * @description Comando para levantar sanciones (Cuarentena/Mute).
+ * Restaura los roles que el usuario tenía antes de la sanción (usando persistencia en DB)
+ * y elimina el registro de "Aislamiento".
+ */
+
+const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
+const { getUserRoles, clearUserRoles } = require('../../../utils/dataHandler');
+
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('unmute')
+        .setDescription('Libera a un usuario y restaura sus roles originales.')
+        .addUserOption(opt => opt.setName('usuario').setDescription('Usuario a liberar').setRequired(true))
+        .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
+
+    async execute(interaction) {
+        const user = interaction.options.getUser('usuario');
+
+        // Validar que no se pueda liberar a sí mismo
+        if (user.id === interaction.user.id) {
+            return interaction.reply({ content: '❌ No puedes liberarte a ti mismo.', flags: [MessageFlags.Ephemeral] });
+        }
+
+        const member = await interaction.guild.members.fetch(user.id).catch(err => {
+            console.error(`Error fetching member ${user.id}:`, err.message);
+            return null;
+        });
+
+        if (!member) return interaction.reply({ content: '❌ Usuario no encontrado en el servidor.', flags: [MessageFlags.Ephemeral] });
+
+        // Recuperar roles guardados
+        const savedRoles = await getUserRoles(interaction.guild.id, user.id);
+
+        try {
+            if (savedRoles && savedRoles.length > 0) {
+                // Restaurar roles
+                await member.roles.set(savedRoles);
+
+                // Limpiar registro DB para evitar conflictos futuros
+                await clearUserRoles(interaction.guild.id, user.id);
+
+                await interaction.reply(`✅ **${user.tag}** ha sido liberado de la sanción y sus roles han sido restaurados.`);
+            } else {
+                await interaction.reply({ content: "⚠️ No encontré roles guardados para este usuario (Quizás no fue muteado por el bot o DB limpia).", flags: [MessageFlags.Ephemeral] });
+            }
+        } catch (err) {
+            console.error(err);
+            await interaction.reply({ content: "❌ Error de permisos al intentar restaurar roles (Jerarquía).", flags: [MessageFlags.Ephemeral] });
+        }
+    },
+};

@@ -1,0 +1,16 @@
+<% /** * Stats Card Partial * @param {string} label - The label text (e.g. "Total Members" ) * @param {string} value -
+    The value to display * @param {string} icon - FontAwesome icon class (e.g. "fas fa-users" ) * @param {string} color
+    - CSS color code for the icon (e.g. "#3498db" ) */ %>
+    <div class="stat-card">
+        <div class="stat-icon" style="color: <%= color %>;">
+            <i class="<%= icon %>"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-value">
+                <%= value %>
+            </div>
+            <div class="stat-label">
+                <%= label %>
+            </div>
+        </div>
+    </div>

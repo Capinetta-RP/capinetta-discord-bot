@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas | Capi Netta</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/<%= cssFile %>?v=<%= Date.now() %>">
+    <% if (process.env.NODE_ENV !=='production' ) { %>
+        <link rel="stylesheet" href="/css/statistics.css?v=<%= Date.now() %>">
+        <% } %>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+            <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+            <script src="/js/logger.js?v=<%= Date.now() %>"></script>
+            <script src="/js/apiManager.js?v=<%= Date.now() %>"></script>
+            <script src="/js/chartManager.js?v=<%= Date.now() %>"></script>
+            <script src="/js/statistics.js?v=<%= Date.now() %>"></script>
+</head>
+
+<body>
+    <%- include('partials/sidebar') %>
+
+        <div class="main-content">
+            <div class="header">
+                <h1>📊 Estadísticas</h1>
+                <p>Análisis detallado de logs y servidores</p>
+            </div>
+
+            <!-- Selector de servidor -->
+            <div class="filters-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>Selecciona un servidor:</label>
+                        <div class="server-dropdown" id="guildDropdownWrapper">
+                            <input type="hidden" id="guildSelector" value="">
+                            <button class="dropdown-toggle" id="guildDropdownBtn"
+                                style="width: 100%; text-align: left; justify-content: space-between; display: flex;">
+                                <span>Todos los servidores</span>
+                                <span>▼</span>
+                            </button>
+                            <div class="dropdown-menu" style="width: 100%; position: absolute; z-index: 100;">
+                                <div class="dropdown-item active" data-value=""
+                                    onclick="selectGuild('', 'Todos los servidores')">Todos los servidores</div>
+                                <% guilds.forEach(g=> { %>
+                                    <div class="dropdown-item" data-value="<%= g.id %>"
+                                        onclick="selectGuild('<%= g.id %>', '<%= g.name %>')">
+                                        <%= g.name %>
+                                    </div>
+                                    <% }); %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estadísticas y gráficos -->
+            <div id="logStatsSection"></div>
+
+            <!-- Filtros -->
+            <div class="filters-section">
+                <h2>🔍 Filtrar Logs</h2>
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>Nivel:</label>
+                        <div class="server-dropdown" id="levelDropdownWrapper">
+                            <input type="hidden" id="filterLevel" value="">
+                            <button class="dropdown-toggle" id="levelDropdownBtn"
+                                style="width: 100%; text-align: left; justify-content: space-between; display: flex;">
+                                <span>Todos</span>
+                                <span>▼</span>
+                            </button>
+                            <div class="dropdown-menu" style="width: 100%; position: absolute; z-index: 100;">
+                                <div class="dropdown-item active" data-value="" onclick="selectLevel('', 'Todos')">Todos
+                                </div>
+                                <div class="dropdown-item" data-value="ERROR" onclick="selectLevel('ERROR', 'Error')">
+                                    Error</div>
+                                <div class="dropdown-item" data-value="WARN"
+                                    onclick="selectLevel('WARN', 'Advertencia')">Advertencia</div>
+                                <div class="dropdown-item" data-value="INFO"
+                                    onclick="selectLevel('INFO', 'Información')">Información</div>
+                                <div class="dropdown-item" data-value="DEBUG" onclick="selectLevel('DEBUG', 'Debug')">
+                                    Debug</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>Búsqueda:</label>
+                        <input type="text" id="filterSearch" placeholder="Buscar en mensajes...">
+                    </div>
+                    <div class="filter-group">
+                        <label>Desde:</label>
+                        <input type="date" id="filterStartDate">
+                    </div>
+                    <div class="filter-group">
+                        <label>Hasta:</label>
+                        <input type="date" id="filterEndDate">
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button id="btnApplyFilters" class="btn btn-primary">🔍 Buscar</button>
+                    <button id="btnClearFilters" class="btn btn-secondary">🔄 Limpiar</button>
+                    <button id="btnExportLogs" class="export-btn">📥 Exportar CSV</button>
+                </div>
+            </div>
+
+            <!-- Tablas de logs -->
+            <div class="logs-section">
+                <h2>📜 Logs</h2>
+                <div style="overflow-x: auto;">
+                    <table class="logs-table">
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th>Nivel</th>
+                                <th>Mensaje</th>
+                                <th>Contexto</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsTable">
+                            <tr class="logs-empty-row">
+                                <td colspan="4">
+                                    <div class="logs-empty">
+                                        <span class="logs-empty-icon">🗒️</span>
+                                        <span class="logs-empty-text">No hay logs para mostrar</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4">
+                                    <div class="logs-found">
+                                        <span class="logs-found-icon"></span>
+                                        <span class="logs-found-text">
+                                            <%= logs.length %> logs encontrados
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div id="paginationContainer"></div>
+            </div>
+        </div>
+
+        <%- include('partials/sidebar-script') %>
+</body>
+
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayuda | Capi Netta RP</title>
+    <link rel="stylesheet" href="/<%= cssFile %>?v=<%= Date.now() %>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <%- include('partials/sidebar') %>
+
+        <main class="main-content">
+            <div class="content-wrapper help-wrapper">
+                <!-- Header -->
+                <div class="about-header">
+                    <div class="about-icon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <h1 class="about-title">Centro de Ayuda</h1>
+                    <p class="about-subtitle">Encuentra respuestas a tus preguntas y obtén soporte</p>
+                </div>
+
+                <!-- Contact Section -->
+                <div class="contact-box">
+                    <div class="contact-item">
+                        <i class="fab fa-github"></i>
+                        <h3>Reportar un Problema</h3>
+                        <p>Abre un issue en nuestro repositorio de GitHub</p>
+                        <a href="https://github.com/Capinetta-RP/capinetta-discord-bot/issues/" target="_blank">
+                            <i class="fab fa-github"></i> GitHub Issues
+                        </a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-discord"></i>
+                        <h3>Únete a Discord</h3>
+                        <p>Soporte en tiempo real de la comunidad</p>
+                        <a href="https://discord.gg/tpxRFHugX7" target="_blank">
+                            <i class="fab fa-discord"></i> Discord
+                        </a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-book"></i>
+                        <h3>Documentación</h3>
+                        <p>Guías detalladas y referencias técnicas</p>
+                        <a href="#faq">
+                            <i class="fas fa-arrow-down"></i> Ver FAQs
+                        </a>
+                    </div>
+                </div>
+
+                <!-- FAQ Section -->
+                <div class="faq-container" id="faq">
+                    <h2 class="about-section-title">
+                        <i class="fas fa-comments"></i>
+                        Preguntas Frecuentes
+                    </h2>
+
+                    <!-- Sistema de Warns -->
+                    <div class="faq-item">
+                        <div class="faq-header">
+                            <h3 class="faq-title">
+                                <i class="fas fa-exclamation-triangle" style="margin-right: 10px; color: #f39c12;"></i>
+                                ¿Cómo funciona el Sistema de Warns?
+                            </h3>
+                            <i class="fas fa-chevron-down faq-icon"></i>
+                        </div>
+                        <div class="faq-content">
+                            <div class="faq-text">
+                                El Sistema de Warns es un mecanismo de moderación que registra infracciones de usuarios:
+                                <br><br>
+                                <strong>Características:</strong>
+                                <ul style="margin: 10px 0;">
+                                    <li>Cada warn registra fecha, moderador y razón</li>
+                                    <li>Acceso a historial completo de advertencias</li>
+                                    <li>Botón de eliminación individual para cada warn</li>
+                                    <li>Opción de limpiar todos los warns de un usuario</li>
+                                    <li>Auditoría completa en los logs del sistema</li>
+                                </ul>
+                                <strong>Cómo usarlo:</strong> Ve a <code>⚠️ Sistema de Warns</code> en el menú,
+                                selecciona un usuario y gestiona sus advertencias.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sistema de Tickets -->
+                    <div class="faq-item">
+                        <div class="faq-header">
+                            <h3 class="faq-title">
+                                <i class="fas fa-ticket-alt" style="margin-right: 10px; color: #2ecc71;"></i>
+                                ¿Cómo gestiono los Tickets?
+                            </h3>
+                            <i class="fas fa-chevron-down faq-icon"></i>
+                        </div>
+                        <div class="faq-content">
+                            <div class="faq-text">
+                                Los Tickets permiten que los usuarios soliciten ayuda de forma organizada:
+                                <br><br>
+                                <strong>Funcionalidades:</strong>
+                                <ul style="margin: 10px 0;">
+                                    <li>Ver tickets abiertos y cerrados</li>
+                                    <li>Asignar tickets a miembros del staff</li>
+                                    <li>Crear categorías de tickets personalizadas</li>
+                                    <li>Cierre automático después de inactividad</li>
+                                    <li>Historial y transcripción de conversaciones</li>
+                                </ul>
+                                <strong>Acceso:</strong> <code>🎫 Tickets</code> en el menú principal.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gestión de Roles -->
+                    <div class="faq-item">
+                        <div class="faq-header">
+                            <h3 class="faq-title">
+                                <i class="fas fa-shield-alt" style="margin-right: 10px; color: #9b59b6;"></i>
+                                ¿Cómo asigno roles a usuarios?
+                            </h3>
+                            <i class="fas fa-chevron-down faq-icon"></i>
+                        </div>
+                        <div class="faq-content">
+                            <div class="faq-text">
+                                La gestión de roles te permite controlar permisos y jerarquía en tu servidor:
+                                <br><br>
+                                <strong>Pasos:</strong>
+                                <ol style="margin: 10px 0;">
+                                    <li>Ve a <code>👑 Gestión de Roles</code></li>
+                                    <li>Selecciona el rol que deseas gestionar</li>
+                                    <li>Añade o elimina permisos según sea necesario</li>
+                                    <li>Los cambios se aplican inmediatamente</li>
+                                </ol>
+                                <strong>Nota:</strong> Los roles están organizados por color y nivel de jerarquía.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard -->
+                    <div class="faq-item">
+                        <div class="faq-header">
+                            <h3 class="faq-title">
+                                <i class="fas fa-chart-line" style="margin-right: 10px; color: #3498db;"></i>
+                                ¿Qué información muestra el Dashboard?
+                            </h3>
+                            <i class="fas fa-chevron-down faq-icon"></i>
+                        </div>
+                        <div class="faq-content">
+                            <div class="faq-text">
+                                El Dashboard proporciona una visión general del servidor:
+                                <br><br>
+                                <strong>Métricas disponibles:</strong>
+                                <ul style="margin: 10px 0;">
+                                    <li><strong>Estadísticas generales:</strong> Miembros activos, tickets abiertos,
+                                        warns totales</li>
+                                    <li><strong>Actividad reciente:</strong> Últimas acciones realizadas en el servidor
+                                    </li>
+                                    <li><strong>Gráficas:</strong> Distribución de actividad por hora/día</li>
+                                    <li><strong>Resumen rápido:</strong> Estado actual del servidor</li>
+                                </ul>
+                                Los datos se actualizan automáticamente cada pocos minutos.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Logs -->
+                    <div class="faq-item">
+                        <div class="faq-header">
+                            <h3 class="faq-title">
+                                <i class="fas fa-history" style="margin-right: 10px; color: #e74c3c;"></i>
+                                ¿Cómo accedo a los Logs?
+                            </h3>
+                            <i class="fas fa-chevron-down faq-icon"></i>
+                        </div>
+                        <div class="faq-content">
+                            <div class="faq-text">
+                                Los Logs mantienen un registro auditable de todas las acciones:
+                                <br><br>
+                                <strong>Características:</strong>
+                                <ul style="margin: 10px 0;">
+                                    <li>Registro completo de todas las moderaciones</li>
+                                    <li>Búsqueda y filtrado avanzado (por usuario, acción, fecha)</li>
+                                    <li>Información del servidor donde ocurrió la acción</li>
+                                    <li>Timestamp preciso de cada evento</li>
+                                    <li>Identificación del moderador responsable</li>
+                                </ul>
+                                <strong>Acceso:</strong> <code>📜 Logs Totales</code> en el menú.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configuración -->
+                    <div class="faq-item">
+                        <div class="faq-header">
+                            <h3 class="faq-title">
+                                <i class="fas fa-cog" style="margin-right: 10px; color: #95a5a6;"></i>
+                                ¿Qué puedo configurar en el servidor?
+                            </h3>
+                            <i class="fas fa-chevron-down faq-icon"></i>
+                        </div>
+                        <div class="faq-content">
+                            <div class="faq-text">
+                                La sección de Configuración permite personalizar el comportamiento del bot:
+                                <br><br>
+                                <strong>Opciones disponibles:</strong>
+                                <ul style="margin: 10px 0;">
+                                    <li>Canales para tickets y logs</li>
+                                    <li>Roles de moderador y soporte</li>
+                                    <li>Permisos de usuarios</li>
+                                    <li>Categorías de tickets personalizadas</li>
+                                    <li>Mensajes de bienvenida y despedida</li>
+                                    <li>Ajustes de moderación automática</li>
+                                </ul>
+                                <strong>Nota:</strong> Los cambios requieren permisos de administrador.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Usuarios -->
+                    <div class="faq-item">
+                        <div class="faq-header">
+                            <h3 class="faq-title">
+                                <i class="fas fa-users" style="margin-right: 10px; color: #1abc9c;"></i>
+                                ¿Cómo gestiono los usuarios del servidor?
+                            </h3>
+                            <i class="fas fa-chevron-down faq-icon"></i>
+                        </div>
+                        <div class="faq-content">
+                            <div class="faq-text">
+                                La sección de Usuarios permite gestionar miembros del servidor:
+                                <br><br>
+                                <strong>Acciones disponibles:</strong>
+                                <ul style="margin: 10px 0;">
+                                    <li>Ver lista completa de miembros</li>
+                                    <li>Asignar roles a usuarios</li>
+                                    <li>Ver historial de acciones del usuario</li>
+                                    <li>Búsqueda y filtrado por nombre o rol</li>
+                                    <li>Estado de verificación y permisos</li>
+                                </ul>
+                                <strong>Acceso:</strong> <code>👥 Usuarios</code> en el menú.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Múltiples Servidores -->
+                    <div class="faq-item">
+                        <div class="faq-header">
+                            <h3 class="faq-title">
+                                <i class="fas fa-globe" style="margin-right: 10px; color: #f39c12;"></i>
+                                ¿Cómo cambio entre servidores?
+                            </h3>
+                            <i class="fas fa-chevron-down faq-icon"></i>
+                        </div>
+                        <div class="faq-content">
+                            <div class="faq-text">
+                                Capi Netta permite gestionar múltiples servidores desde una interfaz centralizada:
+                                <br><br>
+                                <strong>Selector de servidor:</strong>
+                                <ul style="margin: 10px 0;">
+                                    <li>Usa el selector en la barra lateral (arriba a la derecha)</li>
+                                    <li>Haz clic para ver lista de tus servidores</li>
+                                    <li>Selecciona el servidor que quieres gestionar</li>
+                                    <li>El dashboard se actualizará con datos del servidor seleccionado</li>
+                                </ul>
+                                <strong>Tip:</strong> El servidor actual está marcado con un ✓ en el selector.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Problemas Comunes -->
+                    <div class="faq-item">
+                        <div class="faq-header">
+                            <h3 class="faq-title">
+                                <i class="fas fa-wrench" style="margin-right: 10px; color: #e67e22;"></i>
+                                Solucionar problemas comunes
+                            </h3>
+                            <i class="fas fa-chevron-down faq-icon"></i>
+                        </div>
+                        <div class="faq-content">
+                            <div class="faq-text">
+                                <strong>El dashboard no carga correctamente:</strong>
+                                <ul style="margin: 10px 0;">
+                                    <li>Limpia el caché del navegador (Ctrl+Shift+Del)</li>
+                                    <li>Intenta recargar la página (F5)</li>
+                                    <li>Desactiva extensiones del navegador que puedan interferir</li>
+                                </ul>
+                                <br>
+                                <strong>No aparecen los datos del servidor:</strong>
+                                <ul style="margin: 10px 0;">
+                                    <li>Verifica que el bot tenga permisos necesarios</li>
+                                    <li>Asegúrate de tener acceso al servidor</li>
+                                    <li>Intenta cambiar de servidor y volver al anterior</li>
+                                </ul>
+                                <br>
+                                <strong>¿Aún tienes problemas?</strong> Abre un issue en GitHub o contacta en Discord.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="about-copyright">
+                    <p>
+                        ¿No encontraste lo que buscas?
+                        <a href="https://discord.gg/tpxRFHugX7"
+                            style="color: var(--accent-color); text-decoration: none; font-weight: 600;">
+                            Pregunta en Discord
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </main>
+
+        <%- include('partials/sidebar-script') %>
+
+            <script>
+                // FAQ Accordion Logic
+                document.querySelectorAll('.faq-header').forEach(header => {
+                    header.addEventListener('click', () => {
+                        const faqItem = header.parentElement;
+                        faqItem.classList.toggle('active');
+                    });
+                });
+            </script>
+</body>
+
+</html>

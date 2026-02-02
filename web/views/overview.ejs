@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Capi Netta | Análisis General</title>
+    <link rel="stylesheet" href="/<%= cssFile %>?v=<%= Date.now() %>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <%- include('partials/sidebar') %>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <%- include('partials/page-header', { title: '📊 Análisis General de Todos los Servidores' , subtitle:
+                `Vista consolidada de ${globalStats.totalServers} servidor${globalStats.totalServers !==1 ? 'es' : '' }
+                donde administras` }) %>
+
+                <!-- Estadísticas Globales -->
+                <div class="overview-banner">
+                    <h2>🌐 Estadísticas Globales</h2>
+                </div>
+
+                <div class="grid-container">
+                    <div class="card highlight">
+                        <h3>🖥️ Total Servidores</h3>
+                        <div class="value">
+                            <%= globalStats.totalServers %>
+                        </div>
+                        <p class="card-footer">Bajo tu administración</p>
+                    </div>
+                    <div class="card">
+                        <h3>👥 Miembros Totales</h3>
+                        <div class="value">
+                            <%= globalStats.totalMembers %>
+                        </div>
+                        <p class="card-footer">En todos los servidores</p>
+                    </div>
+                    <div class="card">
+                        <h3>🎫 Tickets Abiertos</h3>
+                        <div class="value">
+                            <%= globalStats.totalTicketsOpen %>
+                        </div>
+                        <p class="card-footer">Requieren atención</p>
+                    </div>
+                    <div class="card">
+                        <h3>⚠️ Total Warns</h3>
+                        <div class="value">
+                            <%= globalStats.totalWarns %>
+                        </div>
+                        <p class="card-footer">Acumulados</p>
+                    </div>
+                </div>
+
+                <div class="grid-container">
+                    <div class="card">
+                        <h3>👤 Usuarios Únicos con Warns</h3>
+                        <div class="value">
+                            <%= globalStats.uniqueUsersWarned %>
+                        </div>
+                        <p class="card-footer">Sin duplicados entre servidores</p>
+                    </div>
+                    <div class="card">
+                        <h3>📜 Total Logs</h3>
+                        <div class="value">
+                            <%= globalStats.totalLogs %>
+                        </div>
+                        <p class="card-footer">Registros de actividad</p>
+                    </div>
+                    <div class="card">
+                        <h3>🎤 En Voz Ahora</h3>
+                        <div class="value">
+                            <%= globalStats.totalVoice %>
+                        </div>
+                        <p class="card-footer">Usuarios conectados</p>
+                    </div>
+                    <div class="card">
+                        <h3>👮 Staff Total Online</h3>
+                        <div class="value">
+                            <%= globalStats.totalStaffOnline %>
+                        </div>
+                        <p class="card-footer">Moderadores activos</p>
+                    </div>
+                </div>
+
+                <!-- Desglose por Servidor -->
+                <div class="overview-section">
+                    <h2>📋 Desglose por Servidor</h2>
+                    <div class="server-breakdown-grid">
+                        <% serversData.forEach(server=> { %>
+                            <div class="breakdown-card">
+                                <div class="breakdown-header">
+                                    <% if (server.icon) { %>
+                                        <img src="https://cdn.discordapp.com/icons/<%= server.id %>/<%= server.icon %>.png"
+                                            class="breakdown-icon" alt="<%= server.name %>">
+                                        <% } else { %>
+                                            <div class="breakdown-icon-placeholder">
+                                                <%= server.name.charAt(0).toUpperCase() %>
+                                            </div>
+                                            <% } %>
+                                                <div class="breakdown-info">
+                                                    <h3 class="breakdown-title">
+                                                        <%= server.name %>
+                                                    </h3>
+                                                    <div class="breakdown-meta">
+                                                        <span class="meta-item">👥 <%= server.memberCount %>
+                                                                miembros</span>
+                                                    </div>
+                                                </div>
+                                </div>
+                                <div class="breakdown-stats">
+                                    <div class="breakdown-stat">
+                                        <span class="stat-icon">🎫</span>
+                                        <div>
+                                            <div class="stat-value">
+                                                <%= server.ticketsOpen %>
+                                            </div>
+                                            <div class="stat-label">Tickets</div>
+                                        </div>
+                                    </div>
+                                    <div class="breakdown-stat">
+                                        <span class="stat-icon">⚠️</span>
+                                        <div>
+                                            <div class="stat-value">
+                                                <%= server.warnsTotal %>
+                                            </div>
+                                            <div class="stat-label">Warns</div>
+                                        </div>
+                                    </div>
+                                    <div class="breakdown-stat">
+                                        <span class="stat-icon">🎤</span>
+                                        <div>
+                                            <div class="stat-value">
+                                                <%= server.voiceCount %>
+                                            </div>
+                                            <div class="stat-label">En Voz</div>
+                                        </div>
+                                    </div>
+                                    <div class="breakdown-stat">
+                                        <span class="stat-icon">👮</span>
+                                        <div>
+                                            <div class="stat-value">
+                                                <%= server.staffOnline %>
+                                            </div>
+                                            <div class="stat-label">Staff</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="breakdown-action">
+                                    <a href="/dashboard?server=<%= server.id %>" class="btn btn-primary btn-sm">
+                                        Ver Dashboard →
+                                    </a>
+                                </div>
+                            </div>
+                            <% }); %>
+                    </div>
+                </div>
+
+                <!-- Actividad Reciente Global -->
+                <div class="logs-section">
+                    <h2>📝 Actividad Reciente (Todos los Servidores)</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Usuario</th>
+                                    <th>Servidor</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% recentLogs.forEach(log=> { %>
+                                    <tr>
+                                        <td><strong>#<%= log.id %></strong></td>
+                                        <td>
+                                            <%= new Date(log.timestamp).toLocaleString('es-AR') %>
+                                        </td>
+                                        <td>
+                                            <div class="log-user">
+                                                <img class="log-user-avatar"
+                                                    src="<%= log.userAvatar || 'https://cdn.discordapp.com/embed/avatars/0.png' %>"
+                                                    alt="Avatar" loading="lazy">
+                                                <span class="log-user-name">
+                                                    <%= log.userName || log.userId %>
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <%= log.guildName %>
+                                        </td>
+                                        <td>
+                                            <%= log.action %>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Acciones Rápidas -->
+                <div class="actions-section">
+                    <h2>⚡ Acciones Rápidas</h2>
+                    <div class="button-group">
+                        <a href="/servidores" class="btn btn-primary">🌐 Ver Todos los Servidores</a>
+                        <a href="/tickets" class="btn btn-secondary">🎫 Gestionar Tickets</a>
+                        <a href="/logs" class="btn btn-secondary">📜 Ver Todos los Logs</a>
+                    </div>
+                </div>
+
+        </main>
+
+</body>
+
+<%- include('partials/sidebar-script') %>
+
+</html>

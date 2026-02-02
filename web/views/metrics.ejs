@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Métricas del Sistema | Capi Netta</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.discordapp.com">
+    <link rel="stylesheet" href="/<%= cssFile %>?v=<%= Date.now() %>">
+    <% if (process.env.NODE_ENV !=='production' ) { %>
+        <link rel="stylesheet" href="/css/metrics.css?v=<%= Date.now() %>">
+        <% } %>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+            <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+            <script src="/js/logger.js"></script>
+            <script src="/js/apiManager.js"></script>
+            <script src="/js/chartManager.js"></script>
+            <script src="/js/metrics.js?v=<%= Date.now() %>"></script>
+</head>
+
+<body>
+    <%- include('partials/sidebar') %>
+
+        <div class="main-content">
+            <div class="header">
+                <h1>📊 Métricas del Sistema</h1>
+                <p>Monitoreo en tiempo real del rendimiento</p>
+            </div>
+
+            <!-- Alertas activas -->
+            <div id="alertsSection"></div>
+
+            <!-- Tarjetas de métricas -->
+            <div class="metrics-grid" id="metricsGrid">
+                <div class="metric-card">
+                    <h3>⏱️ Sistema</h3>
+                    <div class="metric-value" id="uptime">--</div>
+                    <div class="metric-label">Uptime</div>
+                    <div class="metric-value" id="memory">--</div>
+                    <div class="metric-label">Memoria RAM</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="memoryProgress"></div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <h3>🗄️ Caché</h3>
+                    <div class="metric-label">
+                        <span class="status-indicator" id="cacheStatus"></span>
+                        <span id="cacheType">--</span>
+                    </div>
+                    <div class="metric-value" id="cacheHitRate">--</div>
+                    <div class="metric-label">Hit Rate</div>
+                    <div class="metric-value" id="cacheKeys">--</div>
+                    <div class="metric-label">Keys almacenadas</div>
+                </div>
+
+                <div class="metric-card">
+                    <h3>🎮 Discord</h3>
+                    <div class="metric-value" id="guilds">--</div>
+                    <div class="metric-label">Servidores</div>
+                    <div class="metric-value" id="users">--</div>
+                    <div class="metric-label">Usuarios</div>
+                    <div class="metric-value" id="discordCalls">--</div>
+                    <div class="metric-label">API Calls</div>
+                </div>
+
+                <div class="metric-card">
+                    <h3>🚗 FiveM (Dev)</h3>
+                    <div class="metric-label">
+                        <span class="status-indicator" id="fivemStatus"></span>
+                        <span id="fivemState">--</span>
+                    </div>
+                    <div class="metric-value" id="fivemPlayers">--</div>
+                    <div class="metric-label">Jugadores (actual / máximo)</div>
+                    <div class="metric-label" id="fivemHostname">--</div>
+                </div>
+
+                <div class="metric-card">
+                    <h3>🌐 HTTP</h3>
+                    <div class="metric-value" id="httpRequests">--</div>
+                    <div class="metric-label">Requests totales</div>
+                    <div class="metric-value" id="avgResponseTime">--</div>
+                    <div class="metric-label">Tiempo promedio</div>
+                    <div class="metric-value" id="successRate">--</div>
+                    <div class="metric-label">Tasa de éxito</div>
+                </div>
+
+                <div class="metric-card">
+                    <h3>💾 Base de Datos</h3>
+                    <div class="metric-value" id="dbQueries">--</div>
+                    <div class="metric-label">Queries totales</div>
+                    <div class="metric-value" id="slowQueries">--</div>
+                    <div class="metric-label">Queries lentas</div>
+                </div>
+            </div>
+
+            <!-- Gráficos históricos -->
+            <div class="controls">
+                <button onclick="updateCharts(1)" data-range="1" class="btn btn-primary range-btn">Última hora</button>
+                <button onclick="updateCharts(6)" data-range="6" class="btn btn-secondary range-btn">Últimas 6h</button>
+                <button onclick="updateCharts(24)" data-range="24" class="btn btn-secondary range-btn">Últimas
+                    24h</button>
+            </div>
+
+            <div class="chart-container">
+                <h2>Memoria y CPU</h2>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="systemChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h2>Rendimiento HTTP</h2>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="httpChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Logs -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>📜 Logs Recientes</h2>
+                    <button onclick="refreshLogs()" class="btn btn-secondary">🔄 Actualizar</button>
+                </div>
+                <div class="logs-container" id="logsContainer">
+                    <p>Cargando logs...</p>
+                </div>
+            </div>
+        </div>
+
+        <%- include('partials/sidebar-script') %>
+</body>
+
+</html>

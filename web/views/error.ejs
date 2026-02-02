@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %> | Capi Netta RP
+    </title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/errors.css">
+</head>
+
+<body>
+
+    <div class="error-container">
+        <div class="error-icon">
+            <i class="<%= icon %>"></i>
+        </div>
+
+        <% if(code) { %>
+            <div class="error-code">
+                <%= code %>
+            </div>
+            <% } %>
+
+                <h1 class="error-title">
+                    <%= title %>
+                </h1>
+                <p class="error-message">
+                    <%= message %>
+                </p>
+
+                <a href="<%= redirectUrl || '/' %>" class="action-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>
+                        <%= redirectText || 'Volver al Inicio' %>
+                    </span>
+                </a>
+    </div>
+
+</body>
+
+</html>

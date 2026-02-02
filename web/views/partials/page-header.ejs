@@ -1,0 +1,21 @@
+<% /** * Page Header Partial * @param {string} title - The main title of the page * @param {string} subtitle - Optional
+    subtitle * @param {string} controls - Optional HTML string for action buttons */ %>
+    <div class="header-section"
+        style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+        <div>
+            <h1>
+                <%- title %>
+            </h1>
+            <% if (typeof subtitle !=='undefined' && subtitle) { %>
+                <p class="subtitle" style="margin-top: 8px; color: var(--text-secondary);">
+                    <%= subtitle %>
+                </p>
+                <% } %>
+        </div>
+
+        <% if (typeof controls !=='undefined' && controls) { %>
+            <div style="display: flex; gap: 10px;">
+                <%- controls %>
+            </div>
+            <% } %>
+    </div>

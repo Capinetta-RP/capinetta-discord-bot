@@ -1,0 +1,23 @@
+<%
+/**
+ * Common footer scripts section
+ * Variables expected:
+ *  - jsFiles: Array of additional JS files to load (optional)
+ *  - guildId: Guild ID for pages that need it (optional)
+ */
+const additionalJs = typeof jsFiles !== 'undefined' ? jsFiles : [];
+const hasGuildId = typeof selectedGuild !== 'undefined' && selectedGuild && selectedGuild.id;
+%>
+
+<!-- Common utilities -->
+<script src="/js/<%= jsFile('dashboard-utils') %>"></script>
+
+<!-- Additional scripts -->
+<% additionalJs.forEach(function(jsPath) { %>
+    <script src="<%= jsPath %>"></script>
+<% }); %>
+
+<!-- Guild ID data for page scripts -->
+<% if (hasGuildId) { %>
+<div id="guildIdData" data-guild-id="<%= selectedGuild.id %>" style="display: none;"></div>
+<% } %>

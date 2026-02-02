@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuarios - <%= selectedGuild.name %>
+    </title>
+    <link rel="stylesheet" href="/<%= cssFile %>?v=<%= Date.now() %>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <%- include('partials/sidebar') %>
+
+        <main class="main-content">
+            <!-- Server Selector -->
+            <%- include('partials/server-selector') %>
+
+                <!-- Usuarios Section -->
+                <div class="content-section">
+                    <%- include('partials/page-header', { title: '<i class="fas fa-users"></i> Gestión de Usuarios' ,
+                        subtitle: 'Administra los miembros, bots y roles del servidor' }) %>
+
+                        <!-- Estadísticas -->
+                        <div class="stats-grid"
+                            style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); margin-bottom: 30px; gap: 16px;">
+                            <%- include('partials/stats-card', { label: 'Total' , value: stats.total,
+                                icon: 'fas fa-users' , color: '#9b59b6' }) %>
+                                <%- include('partials/stats-card', { label: 'Humanos' , value: stats.humans,
+                                    icon: 'fas fa-user' , color: '#e91e63' }) %>
+                                    <%- include('partials/stats-card', { label: 'Bots' , value: stats.bots,
+                                        icon: 'fas fa-robot' , color: '#3498db' }) %>
+                                        <%- include('partials/stats-card', { label: 'En Línea' , value: stats.online,
+                                            icon: 'fas fa-circle' , color: '#2ecc71' }) %>
+                        </div>
+
+                        <!-- Buscador y Filtros -->
+                        <div class="search-filter-container">
+                            <div class="search-box-large">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchUser" placeholder="Buscar por nombre...">
+                            </div>
+                            <div class="filter-buttons-large">
+                                <button class="btn-filter-large active" data-filter="all">
+                                    <i class="fas fa-list"></i> Todos
+                                </button>
+                                <button class="btn-filter-large" data-filter="humans">
+                                    <i class="fas fa-user"></i> Humanos
+                                </button>
+                                <button class="btn-filter-large" data-filter="bots">
+                                    <i class="fas fa-robot"></i> Bots
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Alert Container -->
+                        <div id="userAlert" style="margin-top: 20px;"></div>
+
+                        <!-- Tabla de Usuarios -->
+                        <div class="table-wrapper">
+                            <table class="table-data">
+                                <thead>
+                                    <tr>
+                                        <th>Usuario</th>
+                                        <th>ID</th>
+                                        <th>Apodo</th>
+                                        <th>Roles</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTable">
+                                    <% if (users.length===0) { %>
+                                        <tr>
+                                            <td colspan="6" class="empty-state">
+                                                <i class="fas fa-info-circle"></i>
+                                                <p>No hay usuarios en este servidor</p>
+                                            </td>
+                                        </tr>
+                                        <% } else { %>
+                                            <% users.forEach(function(user) { %>
+                                                <tr class="user-row" data-user-id="<%= user.id %>"
+                                                    data-type="<%= user.isBot ? 'bot' : 'human' %>"
+                                                    data-username="<%= user.username.toLowerCase() %>"
+                                                    data-nickname="<%= user.nickname ? user.nickname.toLowerCase() : '' %>">
+                                                    <td>
+                                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                                            <img src="<%= user.avatar %>" alt="<%= user.username %>"
+                                                                style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--border-color);">
+                                                            <div>
+                                                                <div
+                                                                    style="font-weight: 600; color: var(--text-primary);">
+                                                                    <%= user.username %>
+                                                                        <% if (user.isBot) { %>
+                                                                            <span class="badge"
+                                                                                style="background: rgba(88, 101, 242, 0.2); color: #5865f2; font-size: 0.7rem; margin-left: 4px;">
+                                                                                <i class="fas fa-robot"></i> BOT
+                                                                            </span>
+                                                                            <% } %>
+                                                                </div>
+                                                                <div
+                                                                    style="font-size: 0.85rem; color: var(--text-secondary);">
+                                                                    #<%= user.discriminator %>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <code
+                                                            style="background: var(--bg-secondary); padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">
+                                            <%= user.id %>
+                                        </code>
+                                                    </td>
+                                                    <td>
+                                                        <% if (user.nickname) { %>
+                                                            <span style="color: var(--text-primary); font-weight: 500;">
+                                                                <%= user.nickname %>
+                                                            </span>
+                                                            <% } else { %>
+                                                                <span
+                                                                    style="color: var(--text-secondary); font-style: italic;">
+                                                                    Sin apodo
+                                                                </span>
+                                                                <% } %>
+                                                    </td>
+                                                    <td>
+                                                        <div
+                                                            style="display: flex; flex-wrap: wrap; gap: 6px; max-width: 300px;">
+                                                            <% if (user.roles.length===0) { %>
+                                                                <span class="badge"
+                                                                    style="background: rgba(153, 170, 181, 0.2); color: #99aab5;">
+                                                                    Sin roles
+                                                                </span>
+                                                                <% } else { %>
+                                                                    <% user.roles.slice(0, 3).forEach(function(role) {
+                                                                        %>
+                                                                        <span class="badge role-badge"
+                                                                            data-role-color="<%= role.color %>">
+                                                                            <%= role.name %>
+                                                                        </span>
+                                                                        <% }); %>
+                                                                            <% if (user.roles.length> 3) { %>
+                                                                                <span class="badge"
+                                                                                    style="background: var(--bg-secondary); color: var(--text-secondary);">
+                                                                                    +<%= user.roles.length - 3 %>
+                                                                                </span>
+                                                                                <% } %>
+                                                                                    <% } %>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <% if (user.status==='online' ) { %>
+                                                            <span class="badge"
+                                                                style="background: rgba(67, 233, 123, 0.2); color: #43e97b;">
+                                                                <i class="fas fa-circle" style="font-size: 0.6rem;"></i>
+                                                                En
+                                                                línea
+                                                            </span>
+                                                            <% } else if (user.status==='idle' ) { %>
+                                                                <span class="badge"
+                                                                    style="background: rgba(250, 166, 26, 0.2); color: #faa61a;">
+                                                                    <i class="fas fa-circle"
+                                                                        style="font-size: 0.6rem;"></i>
+                                                                    Ausente
+                                                                </span>
+                                                                <% } else if (user.status==='dnd' ) { %>
+                                                                    <span class="badge"
+                                                                        style="background: rgba(237, 66, 69, 0.2); color: #ed4245;">
+                                                                        <i class="fas fa-circle"
+                                                                            style="font-size: 0.6rem;"></i> No molestar
+                                                                    </span>
+                                                                    <% } else { %>
+                                                                        <span class="badge"
+                                                                            style="background: rgba(153, 170, 181, 0.2); color: #99aab5;">
+                                                                            <i class="fas fa-circle"
+                                                                                style="font-size: 0.6rem;"></i>
+                                                                            Desconectado
+                                                                        </span>
+                                                                        <% } %>
+                                                    </td>
+                                                    <td>
+                                                        <div class="action-buttons">
+                                                            <button class="btn-action btn-manage-roles"
+                                                                data-user-id="<%= user.id %>"
+                                                                data-username="<%= user.username %>"
+                                                                data-avatar="<%= user.avatar %>">
+                                                                <i class="fas fa-user-cog"></i> Gestionar Roles
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <% }); %>
+                                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                </div>
+        </main>
+
+        <!-- Modal para Gestionar Roles -->
+        <div class="modal-overlay" id="manageRolesModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2><i class="fas fa-user-cog"></i> Gestionar Roles</h2>
+                    <button class="modal-close" data-modal-id="manageRolesModal">×</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Info del Usuario -->
+                    <div
+                        style="display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 24px;">
+                        <img id="modalUserAvatar" src="" alt=""
+                            style="width: 64px; height: 64px; border-radius: 50%; border: 3px solid var(--border-color);">
+                        <div>
+                            <h3 id="modalUsername" style="margin: 0; color: var(--text-primary);"></h3>
+                            <p id="modalUserId"
+                                style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 0.9rem;"></p>
+                        </div>
+                    </div>
+
+                    <!-- Alert Container -->
+                    <div id="manageRolesAlert"></div>
+
+                    <form id="manageRolesForm">
+                        <input type="hidden" id="manageUserId">
+
+                        <label
+                            style="display: block; margin-bottom: 12px; color: var(--text-primary); font-weight: 600;">
+                            <i class="fas fa-crown"></i> Roles Disponibles
+                        </label>
+
+                        <div
+                            style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px;">
+                            <% if (roles.length===0) { %>
+                                <p style="color: var(--text-secondary); text-align: center; padding: 20px;">
+                                    No hay roles disponibles para asignar
+                                </p>
+                                <% } else { %>
+                                    <% roles.forEach(function(role) { %>
+                                        <div class="permission-item"
+                                            style="padding: 10px; margin-bottom: 8px; background: var(--bg-secondary); border-radius: 6px; display: flex; align-items: center; gap: 12px;">
+                                            <input type="checkbox" id="role-<%= role.id %>" value="<%= role.id %>"
+                                                class="role-checkbox"
+                                                style="width: 18px; height: 18px; cursor: pointer;">
+                                            <label for="role-<%= role.id %>"
+                                                style="flex: 1; display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0;">
+                                                <span class="role-color-dot" data-role-color="<%= role.color %>"
+                                                    style="width: 12px; height: 12px; border-radius: 50%; display: inline-block;"></span>
+                                                <span style="color: var(--text-primary); font-weight: 500;">
+                                                    <%= role.name %>
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <% }); %>
+                                            <% } %>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn-cancel-modal" data-modal-id="manageRolesModal">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script type="application/json" id="rolesData"><%- JSON.stringify(roles).replace(/</g, '\\u003c') %></script>
+        <script src="/js/<%= jsFile('dashboard-utils') %>?v=<%= Date.now() %>"></script>
+        <script>
+            //<![CDATA[
+            let selectedGuildId = '<%= selectedGuild.id %>';
+
+            // Inicializar sistema de filtrado
+            setupTableFiltering('searchUser', '.btn-filter-large', '.user-row', filterUsersTable);
+
+            // Inicializar modales
+            setupModalOverlays();
+
+            // Event listeners para botones de gestionar roles
+            document.addEventListener('click', function (e) {
+                // Botones de gestionar roles
+                if (e.target.closest('.btn-manage-roles')) {
+                    const btn = e.target.closest('.btn-manage-roles');
+                    const userId = btn.dataset.userId;
+                    const username = btn.dataset.username;
+                    const avatar = btn.dataset.avatar;
+                    manageUserRoles(userId, username, avatar);
+                }
+
+                // Botones de cerrar modal (X)
+                if (e.target.closest('.modal-close')) {
+                    const btn = e.target.closest('.modal-close');
+                    const modalId = btn.dataset.modalId;
+                    closeModal(modalId);
+                }
+
+                // Botones de cancelar modal
+                if (e.target.closest('.btn-cancel-modal')) {
+                    const btn = e.target.closest('.btn-cancel-modal');
+                    const modalId = btn.dataset.modalId;
+                    closeModal(modalId);
+                }
+            });
+
+            // Event listener para el formulario de roles
+            document.getElementById('manageRolesForm').addEventListener('submit', submitManageRoles);
+
+            // Función para filtrar usuarios
+            function filterUsersTable(searchTerm, filter) {
+                const tableRows = document.querySelectorAll('.user-row');
+                tableRows.forEach(function (row) {
+                    const username = row.dataset.username ? row.dataset.username.toLowerCase() : '';
+                    const nickname = row.dataset.nickname ? row.dataset.nickname.toLowerCase() : '';
+                    const rowType = row.dataset.type;
+
+                    const matchesSearch = username.includes(searchTerm) || nickname.includes(searchTerm);
+                    const matchesFilter =
+                        filter === 'all' ||
+                        (filter === 'humans' && rowType === 'human') ||
+                        (filter === 'bots' && rowType === 'bot');
+
+                    row.style.display = matchesSearch && matchesFilter ? '' : 'none';
+                });
+            }
+
+            // Gestionar roles de usuario
+            function manageUserRoles(userId, username, avatar) {
+
+                // Obtener roles actuales del usuario desde la fila
+                const row = document.querySelector('.btn-manage-roles[data-user-id="' + userId + '"]').closest('.user-row');
+                const currentRoles = Array.from(row.querySelectorAll('.badge'))
+                    .map(function (badge) { return badge.textContent.trim(); })
+                    .filter(function (name) {
+                        if (name === 'Sin roles') return false;
+                        if (name.startsWith('+')) return false;
+                        if (name === 'BOT') return false;
+                        return true;
+                    });
+
+                // Configurar modal
+                document.getElementById('manageUserId').value = userId;
+                document.getElementById('modalUsername').textContent = username;
+                document.getElementById('modalUserId').textContent = 'ID: ' + userId;
+                document.getElementById('modalUserAvatar').src = avatar;
+                document.getElementById('modalUserAvatar').alt = username;
+
+                // Resetear checkboxes
+                document.querySelectorAll('.role-checkbox').forEach(function (cb) {
+                    cb.checked = false;
+                });
+
+                // Pre-seleccionar roles que el usuario ya tiene
+                const allRoles = JSON.parse(document.getElementById('rolesData')?.textContent || '[]');
+                allRoles.forEach(function (role) {
+                    if (currentRoles.includes(role.name)) {
+                        const checkbox = document.getElementById('role-' + role.id);
+                        if (checkbox) checkbox.checked = true;
+                    }
+                });
+
+                openModal('manageRolesModal');
+            }
+
+            // Enviar actualización de roles
+            async function submitManageRoles(event) {
+                event.preventDefault();
+                const userId = document.getElementById('manageUserId').value;
+                const username = document.getElementById('modalUsername').textContent;
+
+                // Obtener roles seleccionados
+                const selectedRoles = Array.from(document.querySelectorAll('.role-checkbox:checked'))
+                    .map(function (cb) { return cb.value; });
+
+                try {
+                    const response = await fetch('/usuarios/update-roles/' + userId, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            guildId: selectedGuildId,
+                            roleIds: selectedRoles
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        showAlert('manageRolesAlert', '✅ Roles de ' + username + ' actualizados correctamente', 'success');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        showAlert('manageRolesAlert', '❌ Error: ' + data.message, 'danger');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showAlert('manageRolesAlert', '❌ Error al actualizar roles', 'danger');
+                }
+            }
+
+            // Aplicar colores de roles sin CSS embebido con EJS
+            function applyRoleColors() {
+                document.querySelectorAll('.role-badge[data-role-color]').forEach(function (el) {
+                    const color = el.dataset.roleColor;
+                    if (!color) return;
+                    el.style.background = color + '20';
+                    el.style.color = color;
+                    el.style.border = '1px solid ' + color + '40';
+                });
+
+                document.querySelectorAll('.role-color-dot[data-role-color]').forEach(function (el) {
+                    const color = el.dataset.roleColor;
+                    if (!color) return;
+                    el.style.background = color;
+                });
+            }
+
+            applyRoleColors();
+            //]]>
+        </script>
+
+        <%- include('partials/sidebar-script') %>
+</body>
+
+</html>

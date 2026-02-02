@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Capi Netta | Mis Servidores</title>
+    <link rel="stylesheet" href="/<%= cssFile %>?v=<%= Date.now() %>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Hamburger Menu Button -->
+    <button class="hamburger" id="hamburger" title="Menú">☰</button>
+
+    <!-- Sidebar -->
+    <%- include('partials/sidebar') %>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="header-section">
+                <h1>🌐 Mis Servidores</h1>
+                <p class="subtitle">Vista general de todos los servidores donde tienes permisos de administrador</p>
+            </div>
+
+            <div class="servers-grid">
+                <% serversData.forEach(server=> { %>
+                    <div class="server-card">
+                        <div class="server-header">
+                            <% if (server.icon) { %>
+                                <img src="https://cdn.discordapp.com/icons/<%= server.id %>/<%= server.icon %>.png"
+                                    class="server-icon" alt="<%= server.name %>">
+                                <% } else { %>
+                                    <div class="server-icon-placeholder">
+                                        <%= server.name.charAt(0).toUpperCase() %>
+                                    </div>
+                                    <% } %>
+                                        <div class="server-info">
+                                            <h3 class="server-title">
+                                                <%= server.name %>
+                                            </h3>
+                                            <div class="server-meta">
+                                                <span class="meta-badge">👥 <%= server.memberCount %> miembros</span>
+                                                <% if (server.id===selectedGuild.id) { %>
+                                                    <span class="meta-badge badge-active">✓ Activo</span>
+                                                    <% } %>
+                                            </div>
+                                        </div>
+                        </div>
+
+                        <div class="server-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">🎫 Tickets</span>
+                                <span class="stat-value">
+                                    <%= server.stats.ticketsOpen %>
+                                </span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">⚠️ Warns</span>
+                                <span class="stat-value">
+                                    <%= server.stats.warnsTotal %>
+                                </span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">📜 Logs</span>
+                                <span class="stat-value">
+                                    <%= server.stats.logsCount %>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="server-status">
+                            <% if (server.isSetup) { %>
+                                <span class="status-badge status-ok">✅ Configurado</span>
+                                <% } else { %>
+                                    <span class="status-badge status-warn">⚠️ Sin Configurar</span>
+                                    <% } %>
+                        </div>
+
+                        <div class="server-actions">
+                            <a href="/dashboard?server=<%= server.id %>" class="btn btn-primary">
+                                Administrar →
+                            </a>
+                        </div>
+                    </div>
+                    <% }); %>
+            </div>
+
+            <% if (serversData.length===0) { %>
+                <div class="empty-state">
+                    <h2>😔 No hay servidores disponibles</h2>
+                    <p>No tienes permisos de administrador en ningún servidor donde esté el bot.</p>
+                </div>
+                <% } %>
+
+        </main>
+</body>
+
+<%- include('partials/sidebar-script') %>
+
+</html>

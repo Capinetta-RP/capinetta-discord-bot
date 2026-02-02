@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acerca de | Capi Netta RP</title>
+    <link rel="stylesheet" href="/<%= cssFile %>?v=<%= Date.now() %>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <%- include('partials/sidebar') %>
+
+        <main class="main-content">
+            <div class="content-wrapper about-wrapper">
+                <!-- Header -->
+                <div class="about-header">
+                    <div class="about-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h1 class="about-title">Capi Netta RP</h1>
+                    <p class="about-subtitle">Sistema Multi-Bot Avanzado para Discord</p>
+                </div>
+
+                <!-- Descripción general -->
+                <div class="about-card">
+                    <h2 class="about-section-title">
+                        <i class="fas fa-info-circle"></i>
+                        Sobre Capi Netta
+                    </h2>
+                    <p>
+                        Capi Netta es un sistema completo de gestión para servidores de Discord diseñado para roleplays
+                        y comunidades grandes.
+                        Proporciona herramientas avanzadas de administración, moderación, tickets, warns y un dashboard
+                        web intuitivo para gestionar
+                        múltiples servidores desde una única interfaz.
+                    </p>
+                </div>
+
+                <!-- Características principales -->
+                <div class="about-section">
+                    <h2 class="about-section-title">
+                        <i class="fas fa-star"></i>
+                        Características Principales
+                    </h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <h3><i class="fas fa-gavel"></i> Moderación Avanzada</h3>
+                            <p>Sistema de warns, kicks, mutes y auditoría completa con historial detallado.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <h3><i class="fas fa-ticket-alt"></i> Sistema de Tickets</h3>
+                            <p>Gestión de tickets con categorías, asignación de staff y cierre automático.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <h3><i class="fas fa-shield-alt"></i> Gestión de Roles</h3>
+                            <p>Control granular de permisos y asignación de roles desde el dashboard.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <h3><i class="fas fa-chart-line"></i> Análisis y Estadísticas</h3>
+                            <p>Dashboards detallados con métricas de actividad, usuarios y moderación.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <h3><i class="fas fa-history"></i> Sistema de Logs</h3>
+                            <p>Auditoría completa de acciones con búsqueda avanzada y filtrado.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <h3><i class="fas fa-globe"></i> Multi-Servidor</h3>
+                            <p>Gestiona múltiples servidores desde una única interfaz centralizada.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información técnica -->
+                <div class="about-card">
+                    <h2 class="about-section-title">
+                        <i class="fas fa-code"></i>
+                        Stack Tecnológico
+                    </h2>
+                    <div class="tech-grid">
+                        <div class="tech-section">
+                            <h4>Backend</h4>
+                            <ul>
+                                <li>Node.js + Express</li>
+                                <li>Discord.js</li>
+                                <li>Prisma ORM</li>
+                                <li>MariaDB/MySQL</li>
+                            </ul>
+                        </div>
+                        <div class="tech-section">
+                            <h4>Frontend</h4>
+                            <ul>
+                                <li>EJS Templates</li>
+                                <li>CSS Moderno</li>
+                                <li>JavaScript Vanilla</li>
+                                <li>Responsive Design</li>
+                            </ul>
+                        </div>
+                        <div class="tech-section">
+                            <h4>Autenticación</h4>
+                            <ul>
+                                <li>OAuth2 Discord</li>
+                                <li>Passport.js</li>
+                                <li>Session Management</li>
+                                <li>Rate Limiting</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Versión y enlaces -->
+                <div class="about-card about-info">
+                    <h2 class="about-section-title">
+                        <i class="fas fa-tag"></i>
+                        Información
+                    </h2>
+                    <div class="about-info-content">
+                        <p><strong>Versión:</strong> 1.0.0</p>
+                        <p><strong>Última Actualización:</strong> 2 de Febrero de 2026</p>
+                        <p><strong>Licencia:</strong> Privada</p>
+                    </div>
+                    <div class="about-footer-divider">
+                        <p>
+                            Hecho con amor por Capi Netta RP ❤️
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Footer con copyright -->
+                <div class="about-copyright">
+                    <p>© 2026 Capi Netta RP. Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </main>
+
+        <%- include('partials/sidebar-script') %>
+</body>
+
+</html>

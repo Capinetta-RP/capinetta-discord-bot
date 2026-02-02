@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Capi Netta | Tickets</title>
+    <link rel="stylesheet" href="/<%= cssFile %>?v=<%= Date.now() %>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <%- include('partials/sidebar') %>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <%- include('partials/server-selector') %>
+
+                <%- include('partials/page-header', { title: '🎫 Gestión de Tickets' ,
+                    subtitle: 'Administra los tickets de soporte del servidor' }) %>
+
+                    <form method="get" class="filter-bar">
+                        <select name="status">
+                            <option value="">Estado: Todos</option>
+                            <option value="open" <%=filters.status==='open' ? 'selected' : '' %>>Abiertos</option>
+                            <option value="claimed" <%=filters.status==='claimed' ? 'selected' : '' %>>Reclamados
+                            </option>
+                            <option value="closed" <%=filters.status==='closed' ? 'selected' : '' %>>Cerrados</option>
+                            <option value="archived" <%=filters.status==='archived' ? 'selected' : '' %>>Archivados
+                            </option>
+                        </select>
+
+                        <select name="claimed">
+                            <option value="">Claim: Todos</option>
+                            <option value="true" <%=filters.claimed==='true' ? 'selected' : '' %>>Con dueño</option>
+                            <option value="false" <%=filters.claimed==='false' ? 'selected' : '' %>>Sin dueño</option>
+                        </select>
+
+                        <select name="type">
+                            <option value="">Tipo: Todos</option>
+                            <% types.forEach(t=> { %>
+                                <option value="<%= t.type %>" <%=filters.type===t.type ? 'selected' : '' %>><%= t.type
+                                        || 'N/A' %> (<%= t._count.type %>)</option>
+                                <% }) %>
+                        </select>
+
+                        <button type="submit">Filtrar</button>
+                        <a class="clear-filters" href="/tickets">Limpiar</a>
+                    </form>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Estado</th>
+                                    <th>Creado Por</th>
+                                    <th>Tipo</th>
+                                    <th>Fecha</th>
+                                    <th>Reclamado Por</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% tickets.forEach(ticket=> { %>
+                                    <tr>
+                                        <td>#<%= ticket.ticketId %>
+                                        </td>
+                                        <td>
+                                            <% if (ticket.status==='open' ) { %>
+                                                <span class="badge open">ABIERTO</span>
+                                                <% } else if (ticket.status==='claimed' ) { %>
+                                                    <span class="badge claimed">RECLAMADO</span>
+                                                    <% } else if (ticket.status==='archived' ) { %>
+                                                        <span class="badge archived">ARCHIVADO</span>
+                                                        <% } else { %>
+                                                            <span class="badge closed">CERRADO</span>
+                                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <div class="user-cell">
+                                                <% if (ticket.creatorAvatar) { %>
+                                                    <img src="<%= ticket.creatorAvatar %>" alt="Avatar"
+                                                        class="user-avatar-small">
+                                                    <% } %>
+                                                        <span>
+                                                            <%= ticket.creatorName %>
+                                                        </span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <%= ticket.type || 'N/A' %>
+                                        </td>
+                                        <td>
+                                            <%= new Date(ticket.createdAt).toLocaleString() %>
+                                        </td>
+                                        <td>
+                                            <% if (ticket.claimerName && ticket.claimerName !=='-' ) { %>
+                                                <div class="user-cell">
+                                                    <% if (ticket.claimerAvatar) { %>
+                                                        <img src="<%= ticket.claimerAvatar %>" alt="Avatar"
+                                                            class="user-avatar-small">
+                                                        <% } %>
+                                                            <span>
+                                                                <%= ticket.claimerName %>
+                                                            </span>
+                                                </div>
+                                                <% } else { %>
+                                                    <span class="text-muted">-</span>
+                                                    <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (ticket.transcriptUrl) { %>
+                                                <a href="/transcript/<%= ticket.ticketId %>" target="_blank"
+                                                    class="btn-transcript" title="Ver Transcript">
+                                                    📄 Ver Transcript
+                                                </a>
+                                                <% } else { %>
+                                                    <span class="text-muted">Sin transcript</span>
+                                                    <% } %>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+
+        </main>
+
+</body>
+
+<%- include('partials/sidebar-script') %>
+
+</html>
