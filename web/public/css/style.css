@@ -21,7 +21,7 @@ body {
     background-color: var(--bg-dark);
     color: var(--text-primary);
     display: flex;
-    min-height: 100vh;
+    height: 100vh;
     transition: all 0.3s ease;
 }
 
@@ -40,6 +40,7 @@ body {
     top: 0;
     height: 100vh;
     overflow-y: auto;
+    flex-shrink: 0;
     transition: transform 0.3s ease;
     z-index: 1000;
 }
@@ -47,11 +48,12 @@ body {
 .sidebar.active { transform: translateX(0); }
 
 .main-content {
-    flex-grow: 1;
+    flex: 1;
     padding: 30px;
     margin-left: 250px;
     overflow-y: auto;
     width: calc(100% - 250px);
+    height: 100vh;
     transition: all 0.3s ease;
 }
 
@@ -339,7 +341,7 @@ input[type="color"]::-moz-color-swatch {
 
 /* ========== TABLAS ========== */
 
-.table-container { overflow: hidden; margin-bottom: 30px; }
+.table-container { overflow-x: auto; margin-bottom: 30px; }
 
 table { width: 100%; border-collapse: collapse; }
 
@@ -707,14 +709,20 @@ tr:hover { background-color: rgba(255, 255, 255, 0.02); }
     max-height: 400px;
     overflow-y: auto;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    z-index: 1000;
+    z-index: 2000;
     display: none;
     opacity: 0;
     transform: translateY(-10px);
     transition: all 0.3s;
+    pointer-events: none;
 }
 
-.dropdown-menu.show { display: block; opacity: 1; transform: translateY(0); }
+.dropdown-menu.show { 
+    display: block; 
+    opacity: 1; 
+    transform: translateY(0);
+    pointer-events: auto;
+}
 
 .dropdown-item {
     display: flex;
@@ -940,6 +948,8 @@ h1, h2, h3 { margin-bottom: 20px; }
     align-items: center;
     flex-wrap: wrap;
     gap: 20px;
+    flex-shrink: 0;
+    overflow: visible;
 }
 
 .current-server { display: flex; align-items: center; gap: 15px; }
@@ -967,7 +977,7 @@ h1, h2, h3 { margin-bottom: 20px; }
 
 .current-server-name { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); }
 
-.server-actions-header { display: flex; gap: 12px; align-items: center; }
+.server-actions-header { display: flex; gap: 12px; align-items: center; overflow: visible; }
 
 .btn-view-all {
     padding: 10px 20px;

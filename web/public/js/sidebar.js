@@ -13,7 +13,6 @@ function initSidebar() {
     const sidebar = document.getElementById('sidebar');
 
     if (!hamburger || !sidebar) {
-        console.warn('Sidebar: No se encontró hamburger o sidebar en el DOM');
         return;
     }
 
