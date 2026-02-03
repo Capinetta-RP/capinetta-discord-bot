@@ -17,8 +17,9 @@ function initSidebar() {
     }
 
     // Toggle sidebar al hacer click en hamburger
-    hamburger.addEventListener('click', () => {
-        sidebar.classList.toggle('hidden');
+    hamburger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sidebar.classList.toggle('active');
     });
 
     // Cerrar sidebar al hacer click en un link (en móvil)
@@ -26,32 +27,31 @@ function initSidebar() {
     links.forEach(link => {
         link.addEventListener('click', () => {
             if (window.innerWidth <= 768) {
-                sidebar.classList.add('hidden');
+                sidebar.classList.remove('active');
             }
         });
     });
 
     // Cerrar sidebar al hacer click fuera (solo en móvil)
     document.addEventListener('click', (e) => {
-        if (!sidebar.contains(e.target) && !hamburger.contains(e.target)) {
-            if (window.innerWidth <= 768) {
-                sidebar.classList.add('hidden');
-            }
+        if (window.innerWidth <= 768 && sidebar.classList.contains('active') &&
+            !sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+            sidebar.classList.remove('active');
         }
     });
 
     // Cerrar sidebar cuando cambia el tamaño de pantalla
     window.addEventListener('resize', () => {
         if (window.innerWidth > 768) {
-            sidebar.classList.remove('hidden');
+            sidebar.classList.remove('active');
         } else {
-            sidebar.classList.add('hidden');
+            sidebar.classList.remove('active');
         }
     });
 
     // Estado inicial basado en tamaño de pantalla
     if (window.innerWidth <= 768) {
-        sidebar.classList.add('hidden');
+        sidebar.classList.remove('active');
     }
 }
 
